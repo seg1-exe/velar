@@ -14,20 +14,24 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #000;
+    background: transparent;
     z-index: 9999;
     pointer-events: none;
     will-change: transform;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .loader-snapshot {
     position: absolute;
-    inset: 0;
-    background: #000 center/contain no-repeat;
-    pointer-events: none;
-    opacity: 0;
-  }
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
 
 .motion-blur-overlay {
     position: fixed;
@@ -48,7 +52,7 @@ body {
     height: 100vh;
     position: relative;
     z-index: 1;
-    pointer-events: auto;
+    pointer-events: none;
 }
 
 .slide {
@@ -60,7 +64,7 @@ body {
     overflow: hidden;
     visibility: hidden;
     z-index: 1;
-    pointer-events: none;
+    pointer-events: auto;
     background-color: #000; 
 }
 
@@ -84,6 +88,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    pointer-events: auto;
 }
 
 .media-container video {

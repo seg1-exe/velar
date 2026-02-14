@@ -128,7 +128,7 @@ function gotoSlide(index, direction) {
 
 // --- 3. OBSERVER (SCROLL) ---
 const slideObserver = Observer.create({
-    type: "wheel,touch,pointer",
+    type: "wheel,touch",
     wheelSpeed: -1,
     ignore: ".logo-fixed, .about-back, button, a", 
     onDown: () => {
@@ -190,7 +190,7 @@ function runIntroAnimation() {
     // Le flou diminue de 30px à 0px PENDANT que ça tourne.
     gsap.fromTo(".motion-blur-overlay", 
         { 
-            backdropFilter: "blur(30px)", 
+            backdropFilter: "blur(20px)", 
             webkitBackdropFilter: "blur(30px)",
             yPercent: 0 // On s'assure qu'il est bien à sa place
         },
@@ -227,90 +227,85 @@ function runIntroAnimation() {
             }
         },
         onComplete: () => {
-            console.log("Intro finie. Lancement du Slide UP...");
-        
-            // --- C. LE GRAND FINAL : TRANSITION FLUIDE ---
-            
-            // 1. On remet un fond au loader pour qu'il soit VISIBLE pendant la remontée
-            // MAIS on le met NOIR pour créer l'effet rideau
-            const finalSlide = slides[slides.length - 1];
-            setLoaderSnapshotFromSlide(finalSlide); 
-
-            // Loader visible, mais plus de fond noir : c’est le snapshot qui “fait rideau”
-            gsap.set(".loader", {
-            backgroundColor: "transparent",
-            yPercent: 0,
-            zIndex: 9998
-            });
-            gsap.set(loaderSnapshot, { opacity: 1 });
-            
-            gsap.set(".motion-blur-overlay", {
-                yPercent: 0,
-                zIndex: 9997
-            });
-            
-            // 2. Nettoyage et mise en place de la SCÈNE
-            gsap.killTweensOf(slides);
-            gsap.set(slides, {
-                autoAlpha: 0,
-                visibility: "hidden",
-                zIndex: 1,
-                yPercent: 0,
-                scale: 1,
-                overwrite: true
-            });
+            console.log("Lancement du rebond élastique...");
         
             const firstSlide = slides[0];
-                gsap.set(firstSlide, {
-                autoAlpha: 1,
-                visibility: "visible",
-                zIndex: 2,
-                yPercent: 0,
-                overwrite: true
-            });
-
-            currentIndex = 0;
+            const loaderEl = document.querySelector(".loader");
+            const snapshotEl = document.querySelector(".loader-snapshot");
+            const slidesContainer = document.querySelector(".slides-container");
+        
+            // 1. On prépare TOUTES les slides (pas juste la première)
+            gsap.set(slides, { zIndex: 1, autoAlpha: 1, scale: 1 });
+        
+            // 2. 🔥 On positionne les slides adjacentes AUTOUR de la première
+            const lastSlideIndex = slides.length - 1;
             
-            if (logoFixed) gsap.set(logoFixed, { zIndex: 10002, autoAlpha: 1 });
-            // 3. Timeline IMMÉDIATE
-            let endTl = gsap.timeline({
+            gsap.set(slides[lastSlideIndex], { 
+                visibility: "visible",
+                yPercent: -100,  // Slide du HAUT
+                zIndex: 1
+            });
+            
+            gsap.set(firstSlide, { 
+                visibility: "visible", 
+                yPercent: 0,     // Slide du MILIEU (visible)
+                zIndex: 2
+            });
+            
+            gsap.set(slides[1], { 
+                visibility: "visible",
+                yPercent: 100,   // Slide du BAS
+                zIndex: 1
+            });
+            
+            // Les autres slides restent cachées
+            for (let i = 2; i < lastSlideIndex; i++) {
+                gsap.set(slides[i], { autoAlpha: 0 });
+            }
+        
+            // 3. 🔥 ON CACHE LE LOADER IMMÉDIATEMENT
+            gsap.set(loaderEl, { display: "none", opacity: 0 });
+            gsap.set(snapshotEl, { display: "none" });
+        
+            // 4. Timeline : RECUL puis RETOUR fluide (sans rebond)
+            let pressTl = gsap.timeline({
                 onComplete: () => {
-                    gsap.set(".loader", { display: "none" });
-                    gsap.set(".motion-blur-overlay", { display: "none" });
-                  
-                    // Nettoyage snapshot
-                    gsap.set(loaderSnapshot, { opacity: 0 });
-                    loaderSnapshot.style.backgroundImage = "";
-                    loaderSnapshot.innerHTML = "";
-                  
+                    // Nettoyage final
+                    gsap.set(slidesContainer, { scale: 1 });
+                    gsap.set(slides, { yPercent: 0, zIndex: 1, autoAlpha: 0 });
+                    gsap.set(firstSlide, { zIndex: 2, autoAlpha: 1, yPercent: 0 });
+                    
                     isAnimating = false;
                     slideObserver.enable();
-                    if (logoFixed) gsap.set(logoFixed, { zIndex: 50 });
-                  }
+                    currentIndex = 0;
+                    console.log("Effet terminé, interaction réactivée.");
+                }
             });
         
-            // 4. LE RIDEAU NOIR REMONTE (révèle la slide en dessous)
-            endTl.to([".loader", ".motion-blur-overlay"], {
-                yPercent: -100,
-                duration: 1.5,
-                ease: "power4.inOut",
-                force3D: true
-            })
-            // 5. Les éléments apparaissent pendant la remontée
-            .fromTo(
-                [firstSlide.querySelector(".title"), firstSlide.querySelector(".play-button"), firstSlide.querySelector(".logo")], 
-                { y: 50, opacity: 0 },
-                { 
-                    y: 0, 
-                    opacity: 1, 
-                    duration: 1, 
-                    stagger: 0.15, 
-                    ease: "power2.out" 
-                }, 
-                "-=1.2"
-            );
+            pressTl
+                // A. 🔥 RECUL : Plus lent maintenant
+                .to(slidesContainer, {
+                    scale: 0.8,
+                    duration: 1,        // Plus long qu'avant (0.4 → 0.6)
+                    ease: "power3.inOut"  // Courbe douce
+                })
+                
+                // B. 🔥 RETOUR à 100% : Fluide, sans rebond
+                .to(slidesContainer, {
+                    scale: 1,
+                    duration: 0.6,        // Retour un peu plus lent
+                    ease: "power3.out"    // Sortie douce (pas d'elastic)
+                })
+                
+                // C. TITRE apparaît pendant le retour
+                .fromTo(
+                    firstSlide.querySelector(".title"), 
+                    { y: 50, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+                    "-=0.6"  // Commence un peu avant la fin du retour
+                );
         
-            currentIndex = 0;
+            if (logoFixed) gsap.to(logoFixed, { autoAlpha: 1, duration: 0.5 });
         }
     });
 }
