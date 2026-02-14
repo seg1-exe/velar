@@ -17,7 +17,17 @@ body {
     background: #000;
     z-index: 9999;
     pointer-events: none;
+    will-change: transform;
+    overflow: hidden;
 }
+
+.loader-snapshot {
+    position: absolute;
+    inset: 0;
+    background: #000 center/contain no-repeat;
+    pointer-events: none;
+    opacity: 0;
+  }
 
 .motion-blur-overlay {
     position: fixed;
@@ -29,6 +39,7 @@ body {
     pointer-events: none;
     backdrop-filter: blur(0px); 
     -webkit-backdrop-filter: blur(0px);
+    will-change: transform;
 }
 
 /* --- SLIDES CONTAINER --- */
@@ -320,7 +331,7 @@ body {
 
     /* Footer / Contact : Taille adaptée pour éviter que l'email sorte de l'écran */
     .contact-link {
-        font-size: 32px; /* Beaucoup plus petit pour tenir sur l'écran */
+        font-size: 28px; /* Beaucoup plus petit pour tenir sur l'écran */
         line-height: 1.1;
     }
 
