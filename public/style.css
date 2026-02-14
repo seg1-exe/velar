@@ -330,7 +330,7 @@ body {
     
     /* Logo fixe en bas un peu plus petit */
     .logo-fixed {
-        max-width: 85%;
-        bottom: 30px;
+        max-width: 80%;
+        bottom: 10px;
     }
 }
