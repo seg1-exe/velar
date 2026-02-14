@@ -18,6 +18,18 @@ body {
     pointer-events: none;
 }
 
+.motion-blur-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50; 
+    pointer-events: none;
+    backdrop-filter: blur(0px); 
+    -webkit-backdrop-filter: blur(0px);
+}
+
 .slides-container {
     width: 100vw;
     height: 100vh;
@@ -36,6 +48,7 @@ body {
     visibility: hidden;
     z-index: 1;
     pointer-events: none;
+    background-color: #000; 
 }
 
 .slide[style*="visibility: visible"], 
@@ -48,17 +61,24 @@ body {
     z-index: 2;
 }
 
-.media-container, .media-container video {
+.media-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.media-container video{
-    mix-blend-mode: normal; 
+.media-container video {
+    position: relative;
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+    mix-blend-mode: normal;
     will-change: opacity, transform;
 }
 
