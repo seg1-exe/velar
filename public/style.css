@@ -7,7 +7,6 @@ body {
     color: white;
 }
 
-/* --- LOADER & MOTION BLUR --- */
 .loader {
     position: fixed;
     top: 0;
@@ -46,7 +45,6 @@ body {
     will-change: transform;
 }
 
-/* --- SLIDES CONTAINER --- */
 .slides-container {
     width: 100vw;
     height: 100vh;
@@ -78,7 +76,6 @@ body {
     z-index: 2;
 }
 
-/* --- MEDIA (VIDEO) --- */
 .media-container {
     position: absolute;
     top: 0;
@@ -94,8 +91,8 @@ body {
 .media-container video {
     position: relative;
     width: 100%;
-    height: 100%; /* Force le remplissage vertical */
-    object-fit: cover; /* Garde les proportions sans couper */
+    height: 100%;
+    object-fit: cover;
     mix-blend-mode: normal;
     will-change: opacity, transform;
 }
@@ -104,7 +101,6 @@ body {
     object-fit: contain; 
 }
 
-/* --- SLIDE CONTENT --- */
 .slide-content {
     position: relative;
     z-index: 10;
@@ -119,7 +115,6 @@ body {
 .title {
     font-size: 32px;
     font-weight: 400;
-    margin-top: 16px;
     text-transform: uppercase;
     line-height: 100%;
     opacity: 0; 
@@ -141,7 +136,6 @@ body {
     pointer-events: auto;
 }
 
-/* --- ABOUT OVERLAY --- */
 .about-overlay {
     position: fixed;
     inset: 0;
@@ -260,7 +254,7 @@ body {
     font-weight: 700;
     line-height: 76px;
     text-transform: lowercase;
-    word-break: break-all; /* Empêche l'email de dépasser */
+    word-break: break-all;
 }
 
 .contact-link span {
@@ -272,9 +266,7 @@ body {
     font-size: 65px;
 }
 
-/* --- RESPONSIVE MOBILE (Tablette & Mobile) --- */
 @media (max-width: 768px) {
-    /* Ajustements généraux des espacements */
     .slide-content {
         padding: 24px;
     }
@@ -283,34 +275,29 @@ body {
         padding: 24px 20px;
     }
 
-    /* Le titre de la slide un peu plus petit */
     .title {
-        font-size: 24px;
+        font-size: 20px;
     }
 
-    /* Bouton Back : plus discret et rapproché du bord */
     .about-back {
         top: 24px;
         left: 20px;
         font-size: 18px;
     }
 
-    /* Logo About : marges réduites */
     .about-logo {
         width: 80%;
         margin-top: 60px;
         margin-bottom: 48px;
     }
 
-    /* Description : police réduite */
     .about-description {
         margin-bottom: 48px;
     }
     .about-description p {
-        font-size: 20px; /* 32px c'est trop gros sur mobile */
+        font-size: 20px;
     }
 
-    /* Services : Colonne unique et police réduite */
     .about-services {
         grid-template-columns: 1fr;
         gap: 16px;
@@ -321,8 +308,7 @@ body {
     .service-label {
         margin-bottom: 8px;
     }
-    
-    /* Visuel : Image responsive */
+
     .about-visual {
         grid-template-columns: 1fr;
         padding-left: 0;
@@ -334,24 +320,22 @@ body {
         grid-column: 1;
         justify-self: center;
         width: 100%;
-        max-width: 300px; /* On garde la limite max */
+        max-width: 300px;
         height: auto;
-        aspect-ratio: 1/1; /* Garde le format carré */
+        aspect-ratio: 1/1;
     }
 
-    /* Footer / Contact : Taille adaptée pour éviter que l'email sorte de l'écran */
     .contact-link {
-        font-size: 28px; /* Beaucoup plus petit pour tenir sur l'écran */
+        font-size: 28px;
         line-height: 1.1;
     }
 
     .contact-link i {
         font-size: 28px;
     }
-    
-    /* Logo fixe en bas un peu plus petit */
+
     .logo-fixed {
-        max-width: 80%;
+        max-width: 70%;
         bottom: 10px;
     }
 }
