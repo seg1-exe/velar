@@ -95,6 +95,10 @@ body {
     will-change: opacity, transform;
 }
 
+.slide.is-playing .media-container video {
+    object-fit: contain; 
+}
+
 /* --- SLIDE CONTENT --- */
 .slide-content {
     position: relative;

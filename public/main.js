@@ -174,7 +174,7 @@ function runIntroAnimation() {
 
     // --- CONFIGURATION ---
     const totalLoops = 6; 
-    const duration = 2.5;  
+    const duration = 3;  
     
     // Ton choix : power1.out (Rapide et sec) pour la roulette
     const easing = "power1.out"; 
