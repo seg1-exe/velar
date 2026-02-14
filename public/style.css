@@ -1,0 +1,252 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #000;
+    font-family: 'Helvetica Neue', sans-serif;
+    color: white;
+}
+
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.slides-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+}
+
+.slide {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    visibility: hidden;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.slide[style*="visibility: visible"], 
+.slide[style*="opacity: 1"] {
+    pointer-events: auto;
+}
+
+.slide:first-child {
+    visibility: visible;
+    z-index: 2;
+}
+
+.media-container, .media-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-container video{
+    mix-blend-mode: normal; 
+    will-change: opacity, transform;
+}
+
+.slide-content {
+    position: relative;
+    z-index: 10;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 48px;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 100%;
+    opacity: 0; 
+    transform: translateY(-50px);
+}
+
+.logo-fixed {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    max-width: 70%;
+    height: auto;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: auto;
+}
+
+.about-overlay {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    color: #000;
+    z-index: 1000;
+    display: block; 
+    padding: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    height: 100vh;
+}
+
+.about-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.about-back {
+    position: fixed;
+    top: 48px;
+    left: 48px;
+    background: transparent;
+    color: #000;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 32px;
+    font-weight: 400;
+    border: none;
+    z-index: 1001;
+    user-select: none;
+    pointer-events: auto;
+    font-family: inherit;
+}
+
+.about-logo {
+    width: 60%;
+    max-width: 600px;
+    margin-top: 80px;
+    margin-bottom: 96px;
+    height: auto;
+    object-fit: contain;
+}
+
+.about-description {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 96px;
+}
+
+.about-description p {
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.about-services {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    margin-bottom: 96px;
+    text-transform: uppercase;
+    font-size: 32px;
+    line-height: 1.2;
+}
+
+.service-label {
+    color: #999;
+}
+
+.service-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.service-list li {
+    margin-bottom: 4px;
+}
+
+.about-visual {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr; 
+    margin-bottom: 120px;
+    padding-left: 0;
+}
+
+.about-visual img {
+    grid-column: 2;
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    justify-self: start;
+}
+
+.about-footer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 48px;
+}
+
+.contact-link {
+    font-size: 80px;
+    text-decoration: none;
+    color: #000;
+    font-weight: 700;
+    line-height: 76px;
+    text-transform: lowercase;
+}
+
+.contact-link span {
+    vertical-align: bottom;
+}
+
+.contact-link i {
+    rotate: 45deg;
+    font-size: 65px;
+}
+
+@media (max-width: 768px) {
+    .about-services {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .about-visual {
+        grid-template-columns: 1fr;
+        padding-left: 0;
+        justify-items: center;
+    }
+    
+    .about-visual img {
+        grid-column: 1;
+        justify-self: center;
+    }
+    
+    .about-description p, .about-services {
+        font-size: 24px;
+    }
+
+    .contact-link {
+        font-size: 40px;
+    }
+}
