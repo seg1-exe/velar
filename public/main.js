@@ -42,24 +42,24 @@ function setLoaderSnapshotFromSlide(slideEl) {
     loaderSnapshot.style.backgroundImage = "";
   }
 
-function toggleVideo(index) {
+  function toggleVideo(index) {
     const slide = slides[index];
     const videos = slide.querySelectorAll("video");
-    const isCurrentlyPlaying = Array.from(videos).some(v => !v.paused);
     
-    if (slide.classList.contains("is-playing")) return;
-
-    if (isCurrentlyPlaying) {
-        slide.classList.remove("is-playing");
-        videos.forEach(v => v.pause());
-    } else {
+    if (!videos.length) return;
+    const isVideoPaused = videos[0].paused;
+    
+    if (isVideoPaused) {
         slide.classList.add("is-playing");
         videos.forEach(v => {
             const playPromise = v.play();
             if (playPromise !== undefined) {
-                playPromise.catch(() => {});
+                playPromise.catch(e => console.log("Erreur lecture auto:", e));
             }
         });
+    } else {
+        slide.classList.remove("is-playing");
+        videos.forEach(v => v.pause());
     }
 }
 
@@ -86,6 +86,7 @@ function gotoSlide(index, direction) {
     });
 
     let yPercentNext = direction === "down" ? 100 : -100;
+    nextSlide.classList.remove("is-playing");
 
     gsap.set(nextSlide, { 
         visibility: "visible", 
