@@ -45,16 +45,22 @@ function setLoaderSnapshotFromSlide(slideEl) {
 function toggleVideo(index) {
     const slide = slides[index];
     const videos = slide.querySelectorAll("video");
+    const isCurrentlyPlaying = Array.from(videos).some(v => !v.paused);
     
     if (slide.classList.contains("is-playing")) return;
 
-    slide.classList.add("is-playing");
-    videos.forEach(v => {
-        const playPromise = v.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(() => {});
-        }
-    });
+    if (isCurrentlyPlaying) {
+        slide.classList.remove("is-playing");
+        videos.forEach(v => v.pause());
+    } else {
+        slide.classList.add("is-playing");
+        videos.forEach(v => {
+            const playPromise = v.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {});
+            }
+        });
+    }
 }
 
 slides.forEach((slide, index) => {

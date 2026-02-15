@@ -277,6 +277,7 @@ body {
 
     .title {
         font-size: 20px;
+        margin-top: 20px;
     }
 
     .about-back {
@@ -335,7 +336,7 @@ body {
     }
 
     .logo-fixed {
-        max-width: 70%;
+        max-width: 60%;
         bottom: 10px;
     }
 }
