@@ -65,7 +65,7 @@ function setLoaderSnapshotFromSlide(slideEl) {
 
 slides.forEach((slide, index) => {
     slide.addEventListener("click", () => {
-        if (index === currentIndex && !isAnimating && introHasPlayed) {
+        if (index === currentIndex && introHasPlayed) {
             toggleVideo(index);
         }
     });
