@@ -276,14 +276,14 @@ body {
     }
 
     .title {
-        font-size: 20px;
+        font-size: 16px;
         margin-top: 20px;
     }
 
     .about-back {
         top: 24px;
         left: 20px;
-        font-size: 18px;
+        font-size: 16px;
     }
 
     .about-logo {
@@ -296,13 +296,13 @@ body {
         margin-bottom: 48px;
     }
     .about-description p {
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .about-services {
         grid-template-columns: 1fr;
         gap: 16px;
-        font-size: 20px;
+        font-size: 16px;
         margin-bottom: 48px;
     }
 
