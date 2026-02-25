@@ -1,3 +1,6 @@
+/* ============================================================
+   BASE / MOBILE FIRST
+   ============================================================ */
 body {
     margin: 0;
     padding: 0;
@@ -7,6 +10,7 @@ body {
     color: white;
 }
 
+/* ── Loader ── */
 .loader {
     position: fixed;
     top: 0;
@@ -32,19 +36,21 @@ body {
     z-index: 1;
 }
 
+/* ── Motion-blur overlay ── */
 .motion-blur-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 50; 
+    z-index: 50;
     pointer-events: none;
-    backdrop-filter: blur(0px); 
+    backdrop-filter: blur(0px);
     -webkit-backdrop-filter: blur(0px);
     will-change: transform;
 }
 
+/* ── Slides container ── */
 .slides-container {
     width: 100vw;
     height: 100vh;
@@ -53,6 +59,7 @@ body {
     pointer-events: none;
 }
 
+/* ── Individual slides ── */
 .slide {
     height: 100%;
     width: 100%;
@@ -63,10 +70,10 @@ body {
     visibility: hidden;
     z-index: 1;
     pointer-events: auto;
-    background-color: #000; 
+    background-color: #000;
 }
 
-.slide[style*="visibility: visible"], 
+.slide[style*="visibility: visible"],
 .slide[style*="opacity: 1"] {
     pointer-events: auto;
 }
@@ -76,6 +83,7 @@ body {
     z-index: 2;
 }
 
+/* ── Media container ── */
 .media-container {
     position: absolute;
     top: 0;
@@ -98,9 +106,10 @@ body {
 }
 
 .slide.is-playing .media-container video {
-    object-fit: contain; 
+    object-fit: contain;
 }
 
+/* ── Slide content ── */
 .slide-content {
     position: relative;
     z-index: 10;
@@ -112,16 +121,18 @@ body {
     padding: 48px;
 }
 
+/* ── Title ── */
 .title {
     font-size: 32px;
     font-weight: 400;
     text-transform: uppercase;
     line-height: 100%;
-    opacity: 0; 
+    opacity: 0;
     transform: translateY(-50px);
     text-align: center;
 }
 
+/* ── Mobile fixed logo ── */
 .logo-fixed {
     position: fixed;
     bottom: 20px;
@@ -136,17 +147,22 @@ body {
     pointer-events: auto;
 }
 
+/* ── About overlay (shared mobile + desktop) ── */
 .about-overlay {
     position: fixed;
     inset: 0;
     background: #fff;
     color: #000;
-    z-index: 1000;
-    display: block; 
+    z-index: 2000;
+    display: block;
     padding: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     height: 100vh;
+    /* visibility:hidden prevents flash on load.
+       NO transform here — GSAP owns yPercent exclusively.
+       Mixing CSS transform + GSAP yPercent causes conflicts. */
+    visibility: hidden;
 }
 
 .about-container {
@@ -159,9 +175,6 @@ body {
 }
 
 .about-back {
-    position: fixed;
-    top: 48px;
-    left: 48px;
     background: transparent;
     color: #000;
     cursor: pointer;
@@ -169,10 +182,11 @@ body {
     font-size: 32px;
     font-weight: 400;
     border: none;
-    z-index: 1001;
+    z-index: 2001;
     user-select: none;
     pointer-events: auto;
     font-family: inherit;
+    /* Position overridden per breakpoint */
 }
 
 .about-logo {
@@ -225,7 +239,7 @@ body {
 .about-visual {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 2fr; 
+    grid-template-columns: 1fr 2fr;
     margin-bottom: 120px;
     padding-left: 0;
 }
@@ -266,7 +280,607 @@ body {
     font-size: 65px;
 }
 
-@media (max-width: 768px) {
+/* ============================================================
+   DESKTOP — hidden on mobile, shown at 768px+
+   ============================================================ */
+
+/* ── Desktop navigation bar ── */
+.desktop-nav {
+    display: none;
+}
+
+/* ── Desktop project page ── */
+.project-page {
+    display: none;
+}
+
+/* ============================================================
+   DESKTOP BREAKPOINT — 768px+
+   ============================================================ */
+@media (min-width: 768px) {
+
+    /* Hide mobile logo */
+    .logo-fixed {
+        display: none;
+    }
+
+    /* ── Desktop nav ── */
+    .desktop-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 24px 36px;
+        box-sizing: border-box;
+        z-index: 200;
+        pointer-events: auto;
+        /* starts white, flips to black on project page */
+        color: white;
+    }
+
+    .desktop-nav__logo {
+        height: 40px;
+        width: auto;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-drag: none;
+        object-fit: contain;
+        /* white version by default */
+    }
+
+    /* black logo variant shown on project page */
+    .desktop-nav.is-dark .desktop-nav__logo {
+        /* We swap the src via JS */
+    }
+
+    .desktop-nav__project-title {
+        font-size: 13px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        color: inherit;
+    }
+
+    .desktop-nav__project-title.visible {
+        opacity: 1;
+    }
+
+    .desktop-nav__links {
+        display: flex;
+        gap: 48px;
+        align-items: center;
+    }
+
+    .desktop-nav__btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: inherit;
+        padding: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .desktop-nav__btn:hover {
+        opacity: 0.5;
+    }
+
+    /* Title on slide — repositioned for desktop (top-center under nav) */
+    .title {
+        font-size: 13px;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        /* On desktop the title is in the nav bar, so hide per-slide title */
+        display: none;
+    }
+
+    /* ── Slide content: remove padding top since nav is fixed ── */
+    .slide-content {
+        padding: 100px 36px 36px;
+    }
+
+    /* ─────────────────────────────────────────────
+       PROJECT PAGE
+    ───────────────────────────────────────────── */
+    .project-page {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 500;
+        overflow: hidden;
+        visibility: hidden;
+        /* flex column: top white bar | media | bottom white bar */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ── Top white bar (permanent, like info_projet header) ── */
+    .project-nav {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 24px 36px;
+        box-sizing: border-box;
+        z-index: 15;
+        background: #fff;
+        color: #000;
+        pointer-events: auto;
+    }
+
+    .project-nav__logo {
+        height: 40px;
+        width: auto;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-drag: none;
+        object-fit: contain;
+    }
+
+    .project-nav__btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #000;
+        padding: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .project-nav__btn:hover { opacity: 0.5; }
+
+    /* ── Black media area — grows/shrinks between the two bars ── */
+    .project-track-wrapper {
+        flex: 1 1 auto;
+        min-height: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* The actual scrolling track */
+    .project-track {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        will-change: transform;
+    }
+
+    /* ── Individual project panel ── */
+    .project-panel {
+        flex: 0 0 100vw;
+        width: 100vw;
+        height: 100%;
+        display: flex;
+        align-items: stretch;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* ── Media grid ── */
+    .project-media-grid {
+        display: grid;
+        grid-template-columns: 33% 1fr 25%;
+        grid-template-rows: 1fr;
+        column-gap: 6px;
+        width: 100%;
+        height: 100%;
+        align-items: stretch;
+    }
+
+    .project-cell {
+        overflow: hidden;
+        background: #000;
+        position: relative;
+        height: 100%;
+    }
+
+    .project-cell video,
+    .project-cell img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+    }
+
+    /* ── Bottom white info bar — expands on MORE to reveal meta ── */
+    .project-info-panel {
+        flex: 0 0 auto;
+        background: #fff;
+        color: #000;
+        z-index: 20;
+        overflow: hidden;
+        /* height is controlled by GSAP: collapses to 0 when empty, expands to auto when populated */
+    }
+
+    /* Meta bar — revealed when MORE is clicked */
+    .project-info-meta {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr 1fr;
+        gap: 24px;
+        padding: 28px 36px 32px;
+        box-sizing: border-box;
+        background: #fff;
+        align-items: start;
+    }
+
+    .project-info-meta__title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #000;
+        line-height: 1.4;
+    }
+
+    .project-info-meta__description {
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        line-height: 1.6;
+        letter-spacing: 0.04em;
+        color: #000;
+    }
+
+    .project-info-meta__tags {
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        line-height: 2;
+        letter-spacing: 0.04em;
+        color: #000;
+    }
+
+    .project-info-meta__tags div { line-height: 2; }
+
+    .project-info-meta__date {
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #000;
+        text-align: right;
+    }
+
+    /* ── About overlay on desktop ── */
+    .about-overlay {
+        z-index: 3000;
+    }
+
+    /* ═══════════════════════════════════════════════
+       GALLERY OVERLAY (INDEX / CASE)
+    ═══════════════════════════════════════════════ */
+    .gallery-overlay {
+        position: fixed;
+        inset: 0;
+        background: #fff;
+        z-index: 2500;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        visibility: hidden; /* GSAP owns this */
+    }
+
+    /* ── Gallery nav header ── */
+    .gallery-nav {
+        position: sticky;
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        padding: 20px 48px;
+        box-sizing: border-box;
+        background: #fff;
+        z-index: 10;
+    }
+
+    .gallery-nav__logo {
+        height: 36px;
+        width: auto;
+        object-fit: contain;
+        justify-self: start;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+
+    .gallery-nav__logo.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .gallery-nav__tabs {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gallery-tab {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.10em;
+        color: #000;
+        padding: 0 0 3px;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s ease;
+    }
+
+    .gallery-tab.is-active {
+        border-bottom-color: #000;
+    }
+
+    .gallery-nav__info {
+        justify-self: end;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.10em;
+        color: #000;
+        padding: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .gallery-nav__info:hover,
+    .gallery-tab:hover { opacity: 0.45; }
+
+    /* ── Gallery views wrapper ── */
+    .gallery-view {
+        padding: 32px 48px 80px;
+        box-sizing: border-box;
+    }
+
+    /* ═══ INDEX — true CSS masonry via column-count ═══ */
+    .gallery-masonry {
+        column-count: 5;
+        column-gap: 8px;
+    }
+
+    .masonry-item {
+        break-inside: avoid;
+        margin-bottom: 8px;
+        overflow: hidden;
+        background: #eee;
+    }
+
+    .masonry-item img {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Variable heights via aspect-ratio to create the staggered masonry feel */
+    .masonry-item--mid   img { aspect-ratio: 4/3; }
+    .masonry-item--tall  img { aspect-ratio: 3/4; }
+    .masonry-item--xtall img { aspect-ratio: 2/3; }
+
+    /* Stagger the first item in each column to recreate the offset look */
+    .masonry-item[data-col="1"]:first-child,
+    .masonry-item[data-col="3"]:nth-child(3),
+    .masonry-item[data-col="5"]:nth-child(5) {
+        margin-top: 48px;
+    }
+
+    /* Hover: slight dim */
+    .masonry-item:hover img { opacity: 0.85; }
+
+    /* ═══ CASE — scattered 5-col grid ═══ */
+    .gallery-case {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        column-gap: 24px;
+        row-gap: 0;
+        align-items: start;
+        padding-top: 24px;
+    }
+
+    .case-item {
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+    /* Portrait items taller, landscape shorter, square balanced */
+    .case-item--portrait  img { aspect-ratio: 3/4; }
+    .case-item--landscape img { aspect-ratio: 4/3; }
+    .case-item--square    img { aspect-ratio: 1/1; }
+
+    .case-item img {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
+    }
+
+    .case-item:hover img { opacity: 0.8; }
+
+    .case-item__title {
+        display: block;
+        margin-top: 10px;
+        font-size: 11px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #000;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .case-item:hover .case-item__title {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Vertical offset for the scattered look — odd columns start lower */
+    .case-item[style*="grid-column: 1"],
+    .case-item[style*="grid-column: 3"],
+    .case-item[style*="grid-column: 5"] {
+        margin-top: 48px;
+    }
+
+    .about-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 48px 60px 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
+
+    /* Top bar: logo left, BACK right */
+    .about-topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 64px;
+    }
+
+    .about-logo {
+        width: auto;
+        max-width: 220px;
+        height: auto;
+        margin: 0;
+        object-fit: contain;
+        align-self: flex-start;
+    }
+
+    .about-back {
+        position: static;
+        font-size: 13px;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        top: auto;
+        left: auto;
+    }
+
+    /* Description + address block */
+    .about-description {
+        margin-bottom: 60px;
+        max-width: 680px;
+    }
+
+    .about-description p {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.5;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin: 0 0 24px 0;
+    }
+
+    .about-address {
+        font-style: normal;
+        font-size: 13px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        line-height: 1.6;
+        color: #000;
+    }
+
+    /* Middle row: services left + visual right */
+    .about-middle {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        align-items: start;
+        margin-bottom: 80px;
+    }
+
+    .about-services {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0 48px;
+        margin: 0;
+        font-size: 13px;
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        align-items: start;
+    }
+
+    .service-label {
+        color: #999;
+        font-size: 13px;
+        padding-top: 1px;
+    }
+
+    .service-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .service-list li {
+        font-size: 13px;
+        margin-bottom: 6px;
+        line-height: 1.4;
+    }
+
+    /* 3 images side by side */
+    .about-visual {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        align-self: start;
+    }
+
+    .about-visual img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        grid-column: auto;
+        justify-self: auto;
+    }
+
+    /* Footer: big email + instagram */
+    .about-footer {
+        margin-top: auto;
+        gap: 0;
+        margin-bottom: 0;
+    }
+
+    .contact-link {
+        font-size: 72px;
+        line-height: 0.95;
+        display: block;
+    }
+}
+
+/* ============================================================
+   MOBILE — legacy styles, unchanged
+   ============================================================ */
+@media (max-width: 767px) {
     .slide-content {
         padding: 24px;
     }
@@ -278,9 +892,11 @@ body {
     .title {
         font-size: 16px;
         margin-top: 20px;
+        display: block; /* restore on mobile */
     }
 
     .about-back {
+        position: fixed;
         top: 24px;
         left: 20px;
         font-size: 16px;
@@ -295,6 +911,7 @@ body {
     .about-description {
         margin-bottom: 48px;
     }
+
     .about-description p {
         font-size: 16px;
     }
@@ -316,7 +933,7 @@ body {
         justify-items: center;
         margin-bottom: 60px;
     }
-    
+
     .about-visual img {
         grid-column: 1;
         justify-self: center;

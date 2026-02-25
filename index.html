@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="/public/reset.css">
     <link rel="stylesheet" href="/public/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="cf-2fa-verify" content="false">
+    <!-- data-cfasync="false" tells Cloudflare not to obfuscate anything on this page -->
+    <script data-cfasync="false">/* velar */</script>
     <script src="https://kit.fontawesome.com/847debfb6c.js" crossorigin="anonymous"></script>
     <title>VELAR</title>
   </head>
@@ -13,127 +16,391 @@
     <div class="loader"></div>
     <div class="motion-blur-overlay"></div>
 
+    <!-- ─────────────────────────────────────────────
+         DESKTOP NAVBAR (hidden on mobile)
+    ───────────────────────────────────────────── -->
+    <header class="desktop-nav">
+      <img class="desktop-nav__logo" src="/public/logoWhite.png" alt="Velar logo" draggable="false">
+      <span class="desktop-nav__project-title"></span>
+      <nav class="desktop-nav__links">
+        <button class="desktop-nav__btn" id="nav-index-case">INDEX/ CASE</button>
+        <button class="desktop-nav__btn" id="nav-info">INFO</button>
+      </nav>
+    </header>
+
+    <!-- ─────────────────────────────────────────────
+         HOME — vertical magnetic slides
+    ───────────────────────────────────────────── -->
     <main class="slides-container">
-        
-        <section class="slide">
-            <div class="slide-content">
-                <h2 class="title">LIERAC</h2>
-            </div>
-            <div class="media-container">
-                <video  muted loop playsinline poster="public/medias/BOTANIQUE.png">
-                  <source src="public/medias/botanique.mp4" type="video/mp4" alt="LIERAC">
-                </video>
-            </div>
-        </section>
 
-        <section class="slide">
-            <div class="slide-content">
-                <h2 class="title">BA&SH</h2>
-            </div>
-            <div class="media-container">
-                <video  muted loop playsinline poster="public/medias/PIECES.png">
-                  <source src="public/medias/pieces.mp4" type="video/mp4" alt="BA&SH">
-                </video>
-            </div>
-        </section>
+      <section class="slide" data-index="0" data-title="LIERAC">
+        <div class="slide-content">
+          <h2 class="title">LIERAC</h2>
+        </div>
+        <div class="media-container">
+          <video muted loop playsinline poster="public/medias/BOTANIQUE.png">
+            <source src="public/medias/botanique.mp4" type="video/mp4">
+          </video>
+        </div>
+      </section>
 
-        <section class="slide">
-          <div class="slide-content">
-              <h2 class="title">I Kept my name</h2>
-          </div>
-          <div class="media-container">
-              <video  muted loop playsinline poster="public/medias/I_KEPT_MY_NAME.png">
-                <source src="public/medias/ikeptmyname.mp4" type="video/mp4" alt="I KEPT MY NAME">
-              </video>
-          </div>
-        </section>
+      <section class="slide" data-index="1" data-title="BA&SH">
+        <div class="slide-content">
+          <h2 class="title">BA&amp;SH</h2>
+        </div>
+        <div class="media-container">
+          <video muted loop playsinline poster="public/medias/PIECES.png">
+            <source src="public/medias/pieces.mp4" type="video/mp4">
+          </video>
+        </div>
+      </section>
 
-        <section class="slide">
-          <div class="slide-content">
-              <h2 class="title">THE MAGIC IS</h2>
-          </div>
-          <div class="media-container">
-              <video  muted loop playsinline poster="public/medias/TELES.png">
-                <source src="public/medias/teles.mp4" type="video/mp4" alt="THE MAGIC IS">
-              </video>
-          </div>
-        </section>
+      <section class="slide" data-index="2" data-title="I KEPT MY NAME">
+        <div class="slide-content">
+          <h2 class="title">I Kept my name</h2>
+        </div>
+        <div class="media-container">
+          <video muted loop playsinline poster="public/medias/I_KEPT_MY_NAME.png">
+            <source src="public/medias/ikeptmyname.mp4" type="video/mp4">
+          </video>
+        </div>
+      </section>
 
-        <section class="slide">
-          <div class="slide-content">
-              <h2 class="title">STOP OVERTHINKING</h2>
-          </div>
-          <div class="media-container">
-              <video  muted loop playsinline poster="public/medias/OVERTHINK.png">
-                <source src="public/medias/overthink.mp4" type="video/mp4" alt="STOP OVERTHINKING">
-              </video>
-          </div>
-        </section>
+      <section class="slide" data-index="3" data-title="THE MAGIC IS">
+        <div class="slide-content">
+          <h2 class="title">THE MAGIC IS</h2>
+        </div>
+        <div class="media-container">
+          <video muted loop playsinline poster="public/medias/TELES.png">
+            <source src="public/medias/teles.mp4" type="video/mp4">
+          </video>
+        </div>
+      </section>
 
-        <section class="slide">
-          <div class="slide-content">
-              <h2 class="title">RED</h2>
-          </div>
-          <div class="media-container">
-              <video  muted loop playsinline poster="public/medias/VILLE.png">
-                <source src="public/medias/villeparis.mp4" type="video/mp4" alt="RED">
-              </video>
-          </div>
-        </section>
+      <section class="slide" data-index="4" data-title="STOP OVERTHINKING">
+        <div class="slide-content">
+          <h2 class="title">STOP OVERTHINKING</h2>
+        </div>
+        <div class="media-container">
+          <video muted loop playsinline poster="public/medias/OVERTHINK.png">
+            <source src="public/medias/overthink.mp4" type="video/mp4">
+          </video>
+        </div>
+      </section>
 
-        <section class="slide">
-            <div class="slide-content">
-                <h2 class="title">SO/PARIS</h2>
-            </div>
-            <div class="media-container">
-                <video  muted loop playsinline poster="public/medias/SOPARIS.png">
-                  <source src="public/medias/soparis.mp4" type="video/mp4" alt="SO/PARIS">
-                </video>
-            </div>
-        </section>
+      <section class="slide" data-index="5" data-title="RED">
+        <div class="slide-content">
+          <h2 class="title">RED</h2>
+        </div>
+        <div class="media-container">
+          <video muted loop playsinline poster="public/medias/VILLE.png">
+            <source src="public/medias/villeparis.mp4" type="video/mp4">
+          </video>
+        </div>
+      </section>
+
+      <section class="slide" data-index="6" data-title="SO/PARIS">
+        <div class="slide-content">
+          <h2 class="title">SO/PARIS</h2>
+        </div>
+        <div class="media-container">
+          <video muted loop playsinline poster="public/medias/SOPARIS.png">
+            <source src="public/medias/soparis.mp4" type="video/mp4">
+          </video>
+        </div>
+      </section>
+
     </main>
 
+    <!-- Mobile logo -->
     <img class="logo-fixed" src="/public/logoWhite.png" alt="Velar logo" draggable="false">
 
-    <div class="about-overlay">
-      <button class="about-back"><i class="fa-solid fa-arrow-down"></i> Back</button>
-      
-      <div class="about-container">
-          <img class="about-logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false">
-  
-          <div class="about-description">
-              <p>
-                  We are a creative studio at the intersection of luxury, modernity, and craftsmanship. Our approach is rooted in creation, experimentation, and the art of “crafting the unseen.” As a true accelerator of images, Velar designs visual emotional experiences that tell, resonate, and transform.
-              </p>
-          </div>
-  
-          <div class="about-services">
-              <div class="service-label">Services</div>
-              <ul class="service-list">
-                  <li>Narrative Production</li>
-                  <li>CGI</li>
-                  <li>AI</li>
-                  <li>Art Direction</li>
-                  <li>Social-First Content</li>
-                  <li>Motion Design</li>
-                  <li>Post Production</li>
-              </ul>
-          </div>
-  
-          <div class="about-visual">
-              <img src="/public/assetAbout.jpg" alt="Atmosphere">
-          </div>
-  
-          <footer class="about-footer">
-              <a href="mailto:hello@velar-studio.com" class="contact-link">
-                  hello@velar-studio.com <span><i class="fa-solid fa-arrow-up"></i></span>
-              </a>
-              <a href="https://instagram.com/velar.___" target="_blank" class="contact-link">
-                  @velar.______
-              </a>
-          </footer>
+    <!-- ─────────────────────────────────────────────
+         DESKTOP PROJECT PAGE — horizontal gallery
+    ───────────────────────────────────────────── -->
+    <div class="project-page" id="project-page">
+
+      <!-- Project page nav -->
+      <header class="project-nav">
+        <img class="project-nav__logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false" id="project-logo-back">
+        <nav style="display:flex;gap:48px;align-items:center;">
+          <button class="project-nav__btn" id="project-more-btn">MORE</button>
+          <button class="project-nav__btn" id="project-info-btn">INFO</button>
+        </nav>
+      </header>
+
+      <!-- Horizontal scrolling track -->
+      <div class="project-track-wrapper" id="project-track-wrapper">
+        <div class="project-track" id="project-track">
+
+          <!-- LIERAC -->
+          <article class="project-panel" data-project="0">
+            <div class="project-media-grid">
+              <div class="project-cell project-cell--video">
+                <video class="project-video" muted loop playsinline poster="public/medias/BOTANIQUE.png">
+                  <source src="public/medias/botanique.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/BOTANIQUE.png" alt="LIERAC photo 1" draggable="false">
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/BOTANIQUE.png" alt="LIERAC photo 2" draggable="false">
+              </div>
+            </div>
+          </article>
+
+          <!-- BA&SH -->
+          <article class="project-panel" data-project="1">
+            <div class="project-media-grid">
+              <div class="project-cell project-cell--video">
+                <video class="project-video" muted loop playsinline poster="public/medias/PIECES.png">
+                  <source src="public/medias/pieces.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/PIECES.png" alt="BA&SH photo 1" draggable="false">
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/PIECES.png" alt="BA&SH photo 2" draggable="false">
+              </div>
+            </div>
+          </article>
+
+          <!-- I KEPT MY NAME -->
+          <article class="project-panel" data-project="2">
+            <div class="project-media-grid">
+              <div class="project-cell project-cell--video">
+                <video class="project-video" muted loop playsinline poster="public/medias/I_KEPT_MY_NAME.png">
+                  <source src="public/medias/ikeptmyname.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/I_KEPT_MY_NAME.png" alt="I Kept My Name photo 1" draggable="false">
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/I_KEPT_MY_NAME.png" alt="I Kept My Name photo 2" draggable="false">
+              </div>
+            </div>
+          </article>
+
+          <!-- THE MAGIC IS -->
+          <article class="project-panel" data-project="3">
+            <div class="project-media-grid">
+              <div class="project-cell project-cell--video">
+                <video class="project-video" muted loop playsinline poster="public/medias/TELES.png">
+                  <source src="public/medias/teles.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/TELES.png" alt="The Magic Is photo 1" draggable="false">
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/TELES.png" alt="The Magic Is photo 2" draggable="false">
+              </div>
+            </div>
+          </article>
+
+          <!-- STOP OVERTHINKING -->
+          <article class="project-panel" data-project="4">
+            <div class="project-media-grid">
+              <div class="project-cell project-cell--video">
+                <video class="project-video" muted loop playsinline poster="public/medias/OVERTHINK.png">
+                  <source src="public/medias/overthink.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/OVERTHINK.png" alt="Stop Overthinking photo 1" draggable="false">
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/OVERTHINK.png" alt="Stop Overthinking photo 2" draggable="false">
+              </div>
+            </div>
+          </article>
+
+          <!-- RED -->
+          <article class="project-panel" data-project="5">
+            <div class="project-media-grid">
+              <div class="project-cell project-cell--video">
+                <video class="project-video" muted loop playsinline poster="public/medias/VILLE.png">
+                  <source src="public/medias/villeparis.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/VILLE.png" alt="Red photo 1" draggable="false">
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/VILLE.png" alt="Red photo 2" draggable="false">
+              </div>
+            </div>
+          </article>
+
+          <!-- SO/PARIS -->
+          <article class="project-panel" data-project="6">
+            <div class="project-media-grid">
+              <div class="project-cell project-cell--video">
+                <video class="project-video" muted loop playsinline poster="public/medias/SOPARIS.png">
+                  <source src="public/medias/soparis.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/SOPARIS.png" alt="SO/PARIS photo 1" draggable="false">
+              </div>
+              <div class="project-cell project-cell--photo">
+                <img src="public/medias/SOPARIS.png" alt="SO/PARIS photo 2" draggable="false">
+              </div>
+            </div>
+          </article>
+
+        </div><!-- /.project-track -->
+      </div><!-- /.project-track-wrapper -->
+
+      <!-- Bottom info panel: expands on MORE to show project meta -->
+      <div class="project-info-panel" id="project-info-panel">
+        <div class="project-info-meta" id="project-info-meta">
+          <div class="project-info-meta__title" id="project-info-meta-title"></div>
+          <div class="project-info-meta__description" id="project-info-meta-desc"></div>
+          <div class="project-info-meta__tags" id="project-info-meta-tags"></div>
+          <div class="project-info-meta__date" id="project-info-meta-date"></div>
+        </div>
       </div>
-  </div>
+
+    </div><!-- /#project-page -->
+
+    <!-- ─────────────────────────────────────────────
+         INDEX / CASE OVERLAY
+    ───────────────────────────────────────────── -->
+    <div class="gallery-overlay" id="gallery-overlay">
+
+      <!-- Header -->
+      <header class="gallery-nav">
+        <img class="gallery-nav__logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false" id="gallery-logo">
+        <nav class="gallery-nav__tabs">
+          <button class="gallery-tab" id="tab-index" data-tab="index">INDEX</button>
+          <button class="gallery-tab" id="tab-case"  data-tab="case">CASE</button>
+        </nav>
+        <button class="gallery-nav__info" id="gallery-info-btn">INFO</button>
+      </header>
+
+      <!-- INDEX view — masonry-style grid of many images -->
+      <div class="gallery-view" id="view-index">
+        <div class="gallery-masonry">
+          <!-- Row 1 — staggered tops -->
+          <div class="masonry-item masonry-item--tall"   data-col="1"><img src="public/medias/BOTANIQUE.png"    alt=""></div>
+          <div class="masonry-item masonry-item--mid"    data-col="2"><img src="public/medias/PIECES.png"       alt=""></div>
+          <div class="masonry-item masonry-item--xtall"  data-col="3"><img src="public/medias/I_KEPT_MY_NAME.png" alt=""></div>
+          <div class="masonry-item masonry-item--mid"    data-col="4"><img src="public/medias/TELES.png"        alt=""></div>
+          <div class="masonry-item masonry-item--tall"   data-col="5"><img src="public/medias/OVERTHINK.png"    alt=""></div>
+          <!-- Row 2 -->
+          <div class="masonry-item masonry-item--xtall"  data-col="1"><img src="public/medias/VILLE.png"       alt=""></div>
+          <div class="masonry-item masonry-item--tall"   data-col="2"><img src="public/medias/SOPARIS.png"      alt=""></div>
+          <div class="masonry-item masonry-item--mid"    data-col="3"><img src="public/medias/BOTANIQUE.png"    alt=""></div>
+          <div class="masonry-item masonry-item--xtall"  data-col="4"><img src="public/medias/PIECES.png"       alt=""></div>
+          <div class="masonry-item masonry-item--mid"    data-col="5"><img src="public/medias/TELES.png"        alt=""></div>
+          <!-- Row 3 -->
+          <div class="masonry-item masonry-item--mid"    data-col="1"><img src="public/medias/OVERTHINK.png"    alt=""></div>
+          <div class="masonry-item masonry-item--xtall"  data-col="2"><img src="public/medias/I_KEPT_MY_NAME.png" alt=""></div>
+          <div class="masonry-item masonry-item--tall"   data-col="3"><img src="public/medias/VILLE.png"        alt=""></div>
+          <div class="masonry-item masonry-item--mid"    data-col="4"><img src="public/medias/SOPARIS.png"      alt=""></div>
+          <div class="masonry-item masonry-item--tall"   data-col="5"><img src="public/medias/BOTANIQUE.png"    alt=""></div>
+        </div>
+      </div>
+
+      <!-- CASE view — 5-col scattered project thumbnails -->
+      <div class="gallery-view" id="view-case" style="display:none">
+        <div class="gallery-case">
+          <!-- Each project: one image placed in a specific column via CSS -->
+          <div class="case-item case-item--portrait" data-col="1" data-project="0">
+            <img src="public/medias/BOTANIQUE.png" alt="LIERAC">
+            <span class="case-item__title">LIERAC</span>
+          </div>
+          <div class="case-item case-item--landscape" data-col="2" data-project="1">
+            <img src="public/medias/PIECES.png" alt="BA&SH">
+            <span class="case-item__title">BA&amp;SH</span>
+          </div>
+          <div class="case-item case-item--landscape" data-col="3" data-project="2">
+            <img src="public/medias/I_KEPT_MY_NAME.png" alt="I KEPT MY NAME">
+            <span class="case-item__title">I KEPT MY NAME</span>
+          </div>
+          <div class="case-item case-item--portrait" data-col="4" data-project="3">
+            <img src="public/medias/TELES.png" alt="THE MAGIC IS">
+            <span class="case-item__title">THE MAGIC IS</span>
+          </div>
+          <div class="case-item case-item--portrait" data-col="5" data-project="4">
+            <img src="public/medias/OVERTHINK.png" alt="STOP OVERTHINKING">
+            <span class="case-item__title">STOP OVERTHINKING</span>
+          </div>
+          <div class="case-item case-item--portrait" data-col="1" data-project="5">
+            <img src="public/medias/VILLE.png" alt="RED">
+            <span class="case-item__title">RED</span>
+          </div>
+          <div class="case-item case-item--landscape" data-col="3" data-project="6">
+            <img src="public/medias/SOPARIS.png" alt="SO/PARIS">
+            <span class="case-item__title">SO/PARIS</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /#gallery-overlay -->
+
+
+    <div class="about-overlay">
+
+      <div class="about-container">
+
+        <!-- Top bar: logo left, BACK right -->
+        <div class="about-topbar">
+          <img class="about-logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false">
+          <button class="about-back"><i class="fa-solid fa-arrow-up"></i> BACK</button>
+        </div>
+
+        <!-- Description + address -->
+        <div class="about-description">
+          <p>
+            We are a creative studio at the intersection of luxury, modernity, and craftsmanship.
+            Our approach is rooted in creation, experimentation, and the art of "crafting the unseen."
+            As a true accelerator of images, Velar designs visual emotional experiences that tell, resonate, and transform.
+          </p>
+          <address class="about-address">
+            Paris based (FR)<br>
+            66 Avenue des Champs-Élysées,<br>
+            75008 Paris, France
+          </address>
+        </div>
+
+        <!-- Services row + visual images side by side -->
+        <div class="about-middle">
+          <div class="about-services">
+            <div class="service-label">Services</div>
+            <ul class="service-list">
+              <li>Narrative Production</li>
+              <li>CGI</li>
+              <li>AI</li>
+              <li>Art Direction</li>
+              <li>Social-First Content</li>
+              <li>Motion Design</li>
+              <li>Post Production</li>
+            </ul>
+          </div>
+
+          <div class="about-visual">
+            <img src="/public/assetAbout.jpg" alt="Visual 1">
+            <img src="/public/assetAbout.jpg" alt="Visual 2">
+            <img src="/public/assetAbout.jpg" alt="Visual 3">
+          </div>
+        </div>
+
+        <!-- Footer: email + instagram -->
+        <footer class="about-footer">
+          <span id="velar-contact-email" class="contact-link"></span>
+          <a href="https://instagram.com/velar.___" target="_blank" class="contact-link">
+            @velar.______
+          </a>
+        </footer>
+
+      </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js"></script>
     <script src="main.js"></script>
