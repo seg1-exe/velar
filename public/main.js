@@ -130,16 +130,30 @@ function updateDesktopNavTitle(index) {
 }
 
 // ── Slide observer ────────────────────────────────────────────
+// One navigation per gesture: first event triggers, momentum tail is ignored
+// until events stop for 200ms (gesture truly ended).
+let slideGestureActive  = false;
+let slideGestureTimer   = null;
+
+function onSlideScroll(direction) {
+    if (!slideGestureActive) {
+        slideGestureActive = true;
+        if (!isAnimating) {
+            direction > 0
+                ? gotoSlide(currentIndex + 1 >= slides.length ? 0 : currentIndex + 1, "down")
+                : gotoSlide(currentIndex - 1 < 0 ? slides.length - 1 : currentIndex - 1, "up");
+        }
+    }
+    clearTimeout(slideGestureTimer);
+    slideGestureTimer = setTimeout(() => { slideGestureActive = false; }, 200);
+}
+
 const slideObserver = Observer.create({
     type: "wheel,touch",
     wheelSpeed: -1,
     ignore: ".desktop-nav, .about-overlay, button, a",
-    onDown: () => {
-        if (!isAnimating) gotoSlide(currentIndex - 1 < 0 ? slides.length - 1 : currentIndex - 1, "up");
-    },
-    onUp: () => {
-        if (!isAnimating) gotoSlide(currentIndex + 1 >= slides.length ? 0 : currentIndex + 1, "down");
-    },
+    onDown: () => onSlideScroll(-1),
+    onUp:   () => onSlideScroll(+1),
     tolerance: 10,
     preventDefault: false
 });
@@ -328,15 +342,27 @@ function stopAllProjectVideos() {
 }
 
 // ── Horizontal scroll observer — INFINITE wrap ────────────────
+let projGestureActive = false;
+let projGestureTimer  = null;
+
+function onProjectScroll(direction) {
+    if (!projGestureActive) {
+        projGestureActive = true;
+        goToProjectIndex(projectCurrentIndex + direction);
+    }
+    clearTimeout(projGestureTimer);
+    projGestureTimer = setTimeout(() => { projGestureActive = false; }, 200);
+}
+
 const projectScrollObserver = Observer.create({
     target: projectPage,
     type: "wheel,touch",
     wheelSpeed: -1,
     lockAxis: true,
-    onUp:    () => { goToProjectIndex(projectCurrentIndex + 1); },
-    onDown:  () => { goToProjectIndex(projectCurrentIndex - 1); },
-    onLeft:  () => { goToProjectIndex(projectCurrentIndex + 1); },
-    onRight: () => { goToProjectIndex(projectCurrentIndex - 1); },
+    onUp:    () => onProjectScroll(+1),
+    onDown:  () => onProjectScroll(-1),
+    onLeft:  () => onProjectScroll(+1),
+    onRight: () => onProjectScroll(-1),
     tolerance: 10,
     preventDefault: true
 });
