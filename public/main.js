@@ -479,17 +479,17 @@ function closeAbout() {
 
 (function initGalleryGrids() {
     const indexImages = [
-        { src: "public/medias/BOTANIQUE.png",      title: "LIERAC" },
-        { src: "public/medias/PIECES.png",          title: "BA&SH" },
-        { src: "public/medias/I_KEPT_MY_NAME.png",  title: "I KEPT MY NAME" },
-        { src: "public/medias/TELES.png",           title: "THE MAGIC IS" },
-        { src: "public/medias/OVERTHINK.png",       title: "STOP OVERTHINKING" },
-        { src: "public/medias/VILLE.png",           title: "RED" },
-        { src: "public/medias/SOPARIS.png",         title: "SO/PARIS" },
+        { src: "medias/BOTANIQUE.png",      title: "LIERAC" },
+        { src: "medias/PIECES.png",          title: "BA&SH" },
+        { src: "medias/I_KEPT_MY_NAME.png",  title: "I KEPT MY NAME" },
+        { src: "medias/TELES.png",           title: "THE MAGIC IS" },
+        { src: "medias/OVERTHINK.png",       title: "STOP OVERTHINKING" },
+        { src: "medias/VILLE.png",           title: "RED" },
+        { src: "medias/SOPARIS.png",         title: "SO/PARIS" },
     ];
 
     const caseImages = Array.from({ length: 15 }, (_, i) => ({
-        src: `public/medias/case/image${i + 1}.jpg`,
+        src: `medias/case/image${i + 1}.jpg`,
         title: null
     }));
 
