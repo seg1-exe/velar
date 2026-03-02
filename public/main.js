@@ -1,10 +1,5 @@
-// ============================================================
-//  VELAR — main.js  [DEBUG VERSION]
-// ============================================================
-
 gsap.registerPlugin(Observer);
 
-// ── DOM refs ─────────────────────────────────────────────────
 const slides              = document.querySelectorAll(".slide");
 const logoFixed           = document.querySelector(".logo-fixed");
 const aboutOverlay        = document.querySelector(".about-overlay");
@@ -16,7 +11,6 @@ const desktopNavTitle     = document.querySelector(".desktop-nav__project-title"
 const navIndexCase        = document.getElementById("nav-index-case");
 const navInfo             = document.getElementById("nav-info");
 
-// ── Gallery overlay refs ──────────────────────────────────────
 const galleryOverlay      = document.getElementById("gallery-overlay");
 const galleryLogo         = document.getElementById("gallery-logo");
 const tabIndex            = document.getElementById("tab-index");
@@ -27,7 +21,7 @@ const galleryInfoBtn      = document.getElementById("gallery-info-btn");
 
 let isGalleryOpen         = false;
 let isGalleryAnimating    = false;
-let currentGalleryTab     = "index"; // "index" | "case"
+let currentGalleryTab     = "index";
 
 const projectPage         = document.getElementById("project-page");
 const projectLogoBack     = document.getElementById("project-logo-back");
@@ -35,17 +29,12 @@ const projectMoreBtn      = document.getElementById("project-more-btn");
 const projectInfoBtn      = document.getElementById("project-info-btn");
 const projectTrack        = document.getElementById("project-track");
 const projectInfoPanel    = document.getElementById("project-info-panel");
-const projectInfoClose    = document.getElementById("project-info-close");
-const projectInfoHeaderLogo = document.querySelector(".project-info-header__logo");
 const projectInfoMediaRow = document.getElementById("project-info-media-row");
 const projectInfoMetaTitle = document.getElementById("project-info-meta-title");
 const projectInfoMetaDesc  = document.getElementById("project-info-meta-desc");
 const projectInfoMetaTags  = document.getElementById("project-info-meta-tags");
 const projectInfoMetaDate  = document.getElementById("project-info-meta-date");
 
-// ── DEBUG: log all DOM refs on load ──────────────────────────
-
-// ── State ─────────────────────────────────────────────────────
 let currentIndex             = 0;
 let isAnimating              = true;
 let introHasPlayed           = false;
@@ -58,7 +47,6 @@ let isProjectScrollAnimating = false;
 
 let isAboutAnimating         = false;
 
-// ── Project data ──────────────────────────────────────────────
 const projectData = [
     { title: "LIERAC",          description: "A botanical journey into the heart of LIERAC's serum. We crafted a visual narrative around transparency, purity, and the living intelligence of plants.", tags: "CGI\nAI\nArt Direction",                                    date: "2024" },
     { title: "BA&SH",           description: "Pieces that move. A social-first campaign celebrating freedom of expression through garments that live and breathe on screen.",                          tags: "Narrative Production\nSocial-First Content\nPost Production", date: "2024" },
@@ -69,13 +57,11 @@ const projectData = [
     { title: "SO/PARIS",        description: "Luxury hospitality seen through a new lens. An experience campaign that blurs the line between a hotel stay and a state of mind.",                     tags: "CGI\nArt Direction\nPost Production",                          date: "2023" }
 ];
 
-// ── Loader snapshot ───────────────────────────────────────────
 const loader = document.querySelector(".loader");
 const loaderSnapshot = document.createElement("div");
 loaderSnapshot.className = "loader-snapshot";
 loader.appendChild(loaderSnapshot);
 
-// ── Mobile: video toggle ──────────────────────────────────────
 function toggleVideo(index) {
     const slide  = slides[index];
     const videos = slide.querySelectorAll("video");
@@ -95,11 +81,8 @@ slides.forEach((slide, index) => {
     });
 });
 
-// ── Vertical slide navigation ─────────────────────────────────
 function gotoSlide(index, direction) {
-    console.log(`[VELAR DEBUG] gotoSlide(${index}, ${direction}) | isAnimating=${isAnimating}`);
-    if (isAnimating) {
- return; }
+    if (isAnimating) return;
     isAnimating = true;
 
     const currentSlide = slides[currentIndex];
@@ -129,9 +112,6 @@ function updateDesktopNavTitle(index) {
     desktopNavTitle.classList.add("visible");
 }
 
-// ── Slide observer ────────────────────────────────────────────
-// One navigation per gesture: first event triggers, momentum tail is ignored
-// until events stop for 200ms (gesture truly ended).
 let slideGestureActive  = false;
 let slideGestureTimer   = null;
 
@@ -151,19 +131,18 @@ function onSlideScroll(direction) {
 const slideObserver = Observer.create({
     type: "wheel,touch",
     wheelSpeed: -1,
+    lockAxis: true,
     ignore: ".desktop-nav, .about-overlay, button, a",
-    onDown: () => onSlideScroll(-1),
-    onUp:   () => onSlideScroll(+1),
+    onDown:  () => onSlideScroll(-1),
+    onUp:    () => onSlideScroll(+1),
+    onRight: () => { if (!isDesktop) openGallery("case"); },
     tolerance: 10,
     preventDefault: false
 });
 slideObserver.disable();
 
-// ── Intro animation ───────────────────────────────────────────
 function runIntroAnimation() {
-    console.log("[VELAR DEBUG] runIntroAnimation() called");
-    if (introHasPlayed) {
- return; }
+    if (introHasPlayed) return;
     introHasPlayed = true;
 
     gsap.set(".loader",              { backgroundColor: "transparent", yPercent: 0, y: 0, force3D: true });
@@ -196,7 +175,6 @@ function runIntroAnimation() {
             }
         },
         onComplete: () => {
-
             const firstSlide      = slides[0];
             const lastIdx         = slides.length - 1;
             const slidesContainer = document.querySelector(".slides-container");
@@ -210,50 +188,35 @@ function runIntroAnimation() {
             gsap.set(".loader",          { display: "none", opacity: 0 });
             gsap.set(".loader-snapshot", { display: "none" });
 
-            console.log("[VELAR DEBUG] Building pressTl (scale bounce)...");
-
             const pressTl = gsap.timeline({
-                onStart: () => {
-                },
                 onComplete: () => {
-
                     gsap.set(slidesContainer, { scale: 1 });
                     gsap.set(slides,     { yPercent: 0, zIndex: 1, autoAlpha: 0 });
                     gsap.set(firstSlide, { zIndex: 2, autoAlpha: 1, yPercent: 0 });
 
                     isAnimating = false;
-
                     slideObserver.enable();
-
                     currentIndex = 0;
                     updateDesktopNavTitle(0);
 
-                    if (isDesktop && desktopNav) {
-                        gsap.to(desktopNav, { autoAlpha: 1, duration: 0.5 });
-                    }
-                    if (!isDesktop && logoFixed) {
-                        gsap.to(logoFixed, { autoAlpha: 1, duration: 0.5 });
-                    }
+                    if (isDesktop && desktopNav) gsap.to(desktopNav, { autoAlpha: 1, duration: 0.5 });
+                    if (!isDesktop && logoFixed)  gsap.to(logoFixed,  { autoAlpha: 1, duration: 0.5 });
                 }
             });
 
             pressTl
                 .to(slidesContainer, { scale: 0.8, duration: 1,   ease: "power3.inOut" })
                 .to(slidesContainer, { scale: 1,   duration: 0.6, ease: "power3.out"   });
-
-            console.log("[VELAR DEBUG] pressTl built, tweens:", pressTl.getChildren().length);
         }
     });
 }
 
-// ── Desktop: init project page ────────────────────────────────
 function initDesktopProjectPage() {
     if (!projectPage) return;
     gsap.set(projectPage, { autoAlpha: 1, yPercent: 100 });
     gsap.set(desktopNav,  { autoAlpha: 0 });
 }
 
-// ── Open / close project page ─────────────────────────────────
 function openProjectPage(startIndex) {
     if (!isDesktop || isProjectAnimating || isProjectPageOpen) return;
     isProjectAnimating = true;
@@ -261,7 +224,6 @@ function openProjectPage(startIndex) {
     projectCurrentIndex = startIndex;
     snapTrackToIndex(startIndex, false);
 
-    // Clear meta fields — they only appear after clicking MORE
     projectInfoMetaTitle.textContent = "";
     projectInfoMetaDesc.textContent  = "";
     projectInfoMetaTags.innerHTML    = "";
@@ -288,7 +250,6 @@ function closeProjectPage() {
     stopAllProjectVideos();
     projectScrollObserver.disable();
 
-    // Collapse info strip and reset button text
     if (isInfoExpanded) {
         isInfoExpanded = false;
         isInfoAnimating = false;
@@ -311,10 +272,8 @@ function closeProjectPage() {
     });
 }
 
-// ── Track snap ────────────────────────────────────────────────
 function snapTrackToIndex(index, animate) {
     const x = -(index * window.innerWidth);
-    console.log(`[VELAR DEBUG] snapTrackToIndex(${index}) → x=${x} | animate=${animate}`);
     if (animate) {
         gsap.to(projectTrack,  { x, duration: 1, ease: "power4.inOut" });
     } else {
@@ -322,7 +281,6 @@ function snapTrackToIndex(index, animate) {
     }
 }
 
-// ── Video helpers ─────────────────────────────────────────────
 function playProjectVideo(index) {
     const panel = document.querySelectorAll(".project-panel")[index];
     if (!panel) return;
@@ -341,7 +299,6 @@ function stopAllProjectVideos() {
     document.querySelectorAll(".project-panel .project-video").forEach(v => v.pause());
 }
 
-// ── Horizontal scroll observer — INFINITE wrap ────────────────
 let projGestureActive = false;
 let projGestureTimer  = null;
 
@@ -388,7 +345,6 @@ function goToProjectIndex(newIndex) {
     };
 
     if (prev === total - 1 && next === 0) {
-        // Wrap forward: place panel 0 one slot after the last, animate there, then reset silently
         gsap.set(panels[0], { x: total * w });
         gsap.to(projectTrack, {
             x: -(total * w), duration: 1, ease: "power4.inOut",
@@ -399,7 +355,6 @@ function goToProjectIndex(newIndex) {
             }
         });
     } else if (prev === 0 && next === total - 1) {
-        // Wrap backward: place last panel one slot before panel 0, animate there, then reset silently
         gsap.set(panels[total - 1], { x: -(total * w) });
         gsap.to(projectTrack, {
             x: w, duration: 1, ease: "power4.inOut",
@@ -420,11 +375,8 @@ function goToProjectIndex(newIndex) {
     }
 }
 
-// ── Info panel state ──────────────────────────────────────────
 let isInfoExpanded  = false;
 let isInfoAnimating = false;
-
-// ── Populate meta bar (text only) ─────────────────────────────
 
 function openProjectInfo() {
     if (isInfoAnimating || isInfoExpanded) return;
@@ -433,12 +385,9 @@ function openProjectInfo() {
 
     if (projectMoreBtn) projectMoreBtn.textContent = "CLOSE";
 
-    // Capture the current resting height (padding strip) before populating
     const restingH = projectInfoPanel.offsetHeight;
-
     populateProjectMeta(projectCurrentIndex);
 
-    // Measure full target height while invisible
     gsap.set(projectInfoPanel, { height: "auto", visibility: "hidden" });
     const targetH = projectInfoPanel.offsetHeight;
     gsap.set(projectInfoPanel, { height: restingH, visibility: "visible" });
@@ -464,13 +413,11 @@ function closeProjectInfo() {
     const currentH = projectInfoPanel.offsetHeight;
     gsap.set(projectInfoPanel, { height: currentH });
 
-    // Clear text immediately so we can measure the resting height (padding only)
     projectInfoMetaTitle.textContent = "";
     projectInfoMetaDesc.textContent  = "";
     projectInfoMetaTags.innerHTML    = "";
     projectInfoMetaDate.textContent  = "";
 
-    // Measure the empty panel height (just the padding strip)
     gsap.set(projectInfoPanel, { height: "auto", visibility: "hidden" });
     const restingH = projectInfoPanel.offsetHeight;
     gsap.set(projectInfoPanel, { height: currentH, visibility: "visible" });
@@ -486,7 +433,6 @@ function closeProjectInfo() {
     });
 }
 
-// ── Populate meta bar ─────────────────────────────────────────
 function populateProjectMeta(index) {
     const data = projectData[index];
     if (!data) return;
@@ -496,39 +442,28 @@ function populateProjectMeta(index) {
     projectInfoMetaDate.textContent  = data.date;
 }
 
-// ── Slide click → project page (desktop) ─────────────────────
 slides.forEach((slide, index) => {
     slide.addEventListener("click", () => {
-        console.log(`[VELAR DEBUG] Slide ${index} clicked (desktop handler) | isDesktop=${isDesktop} | introHasPlayed=${introHasPlayed} | index===currentIndex: ${index===currentIndex} | isAnimating=${isAnimating}`);
         if (!isDesktop || !introHasPlayed || index !== currentIndex || isAnimating) return;
         openProjectPage(index);
     });
 });
 
-// ── About overlay ─────────────────────────────────────────────
-if (aboutOverlay) {
-    gsap.set(aboutOverlay, { yPercent: 100, autoAlpha: 1 });
-} else {
-}
+if (aboutOverlay) gsap.set(aboutOverlay, { yPercent: 100, autoAlpha: 1 });
 
 function openAbout() {
-    console.log(`[VELAR DEBUG] openAbout() | isAboutAnimating=${isAboutAnimating}`);
-    if (isAboutAnimating) {
- return; }
+    if (isAboutAnimating) return;
     isAboutAnimating = true;
     slideObserver.disable();
     if (isDesktop && isProjectPageOpen) projectScrollObserver.disable();
     gsap.to(aboutOverlay, {
         yPercent: 0, duration: 1, ease: "power4.inOut",
-        onComplete: () => {
- isAboutAnimating = false; }
+        onComplete: () => { isAboutAnimating = false; }
     });
 }
 
 function closeAbout() {
-    console.log(`[VELAR DEBUG] closeAbout() | isAboutAnimating=${isAboutAnimating}`);
-    if (isAboutAnimating) {
- return; }
+    if (isAboutAnimating) return;
     isAboutAnimating = true;
     gsap.to(aboutOverlay, {
         yPercent: 100, duration: 0.8, ease: "power4.inOut",
@@ -542,7 +477,6 @@ function closeAbout() {
     });
 }
 
-// ── Gallery: populate INDEX and CASE grids ─────────────────────
 (function initGalleryGrids() {
     const indexImages = [
         { src: "public/medias/BOTANIQUE.png",      title: "LIERAC" },
@@ -598,7 +532,6 @@ function closeAbout() {
     buildGrid('case-grid', caseImages);
 })();
 
-// ── Gallery overlay ───────────────────────────────────────────
 function openGallery(tab = "index") {
     if (isGalleryAnimating || isGalleryOpen) return;
     isGalleryAnimating = true;
@@ -625,61 +558,36 @@ function closeGallery() {
     });
 }
 
-function switchGalleryTab(tab, animate = true) {
+function switchGalleryTab(tab) {
     currentGalleryTab = tab;
-    // Update tab underlines
     if (tabIndex) tabIndex.classList.toggle("is-active", tab === "index");
     if (tabCase)  tabCase.classList.toggle("is-active",  tab === "case");
-    // Logo toujours visible dans la gallery overlay
     if (galleryLogo) galleryLogo.classList.remove("hidden");
-    // Switch views
     if (viewIndex) viewIndex.style.display = tab === "index" ? "" : "none";
     if (viewCase)  viewCase.style.display  = tab === "case"  ? "" : "none";
 }
 
-// ── Gallery event listeners ───────────────────────────────────
-if (galleryOverlay) {
-    // Park below viewport initially
-    gsap.set(galleryOverlay, { yPercent: 100, autoAlpha: 0 });
-}
+if (galleryOverlay) gsap.set(galleryOverlay, { yPercent: 100, autoAlpha: 0 });
 
-if (galleryLogo) galleryLogo.addEventListener("click", e => { e.stopPropagation(); closeGallery(); });
-if (tabIndex) tabIndex.addEventListener("click", e => { e.stopPropagation(); switchGalleryTab("index"); });
-if (tabCase)  tabCase.addEventListener("click",  e => { e.stopPropagation(); switchGalleryTab("case");  });
+if (galleryLogo)   galleryLogo.addEventListener("click",   e => { e.stopPropagation(); closeGallery(); });
+if (tabIndex)      tabIndex.addEventListener("click",      e => { e.stopPropagation(); switchGalleryTab("index"); });
+if (tabCase)       tabCase.addEventListener("click",       e => { e.stopPropagation(); switchGalleryTab("case"); });
+if (galleryInfoBtn) galleryInfoBtn.addEventListener("click", e => { e.stopPropagation(); openAbout(); });
 
-if (galleryInfoBtn) {
-    galleryInfoBtn.addEventListener("click", e => { e.stopPropagation(); openAbout(); });
-}
-
-// Click on a CASE item → navigate to that project
 document.querySelectorAll(".case-item").forEach(item => {
     item.addEventListener("click", e => {
         e.stopPropagation();
         const projectIndex = parseInt(item.dataset.project, 10);
         if (isNaN(projectIndex)) return;
         closeGallery();
-        // Small delay to let gallery close before opening project
         gsap.delayedCall(0.4, () => openProjectPage(projectIndex));
     });
 });
 
-// ── Event listeners ───────────────────────────────────────────
-if (logoFixed) {
-    logoFixed.addEventListener("click", e => { e.stopPropagation();
- openAbout(); });
-}
-
-if (aboutBack) {
-    aboutBack.addEventListener("click", e => { e.stopPropagation();
- closeAbout(); });
-} else {
-}
-
-if (navInfo) {
-    navInfo.addEventListener("click", e => { e.stopPropagation();
- openAbout(); });
-} else {
-}
+if (logoFixed)       logoFixed.addEventListener("click",       e => { e.stopPropagation(); openAbout(); });
+if (aboutBack)       aboutBack.addEventListener("click",       e => { e.stopPropagation(); closeAbout(); });
+if (navInfo)         navInfo.addEventListener("click",         e => { e.stopPropagation(); openAbout(); });
+if (projectInfoBtn)  projectInfoBtn.addEventListener("click",  e => { e.stopPropagation(); openAbout(); });
 
 if (navIndexCase) {
     navIndexCase.addEventListener("click", e => {
@@ -690,8 +598,7 @@ if (navIndexCase) {
 }
 
 if (projectLogoBack) {
-    projectLogoBack.addEventListener("click", e => { e.stopPropagation();
- if (isProjectPageOpen) closeProjectPage(); });
+    projectLogoBack.addEventListener("click", e => { e.stopPropagation(); if (isProjectPageOpen) closeProjectPage(); });
 }
 
 if (projectMoreBtn) {
@@ -702,35 +609,19 @@ if (projectMoreBtn) {
     });
 }
 
-if (projectInfoBtn) {
-    projectInfoBtn.addEventListener("click", e => { e.stopPropagation(); openAbout(); });
-}
-
-// ── Email: built at runtime — never a static address in HTML ─
-// PERMANENT FIX for Cloudflare obfuscation:
-//   Cloudflare Dashboard → Scrape Shield → Email Address Obfuscation → OFF
-//
-// This code also handles the case where CF already rewrote the DOM
-// before this script ran (CF injects its own __cf_email__ span).
 (function setupEmail() {
     const part1 = "hello";
     const at    = String.fromCharCode(64);
     const part2 = "velar-studio.com";
     const full  = part1 + at + part2;
 
-    // Nuke whatever Cloudflare put in the about-footer first link position
     const footer = document.querySelector(".about-footer");
-    if (!footer) {
- return; }
+    if (!footer) return;
 
-    // Remove every child that is NOT the instagram link
     Array.from(footer.children).forEach(child => {
-        if (!child.href || !child.href.includes("instagram")) {
-            footer.removeChild(child);
-        }
+        if (!child.href || !child.href.includes("instagram")) footer.removeChild(child);
     });
 
-    // Build our clean span from scratch
     const emailSpan = document.createElement("span");
     emailSpan.className = "contact-link";
     emailSpan.style.cursor = "pointer";
@@ -742,11 +633,9 @@ if (projectInfoBtn) {
         window.location.href = "mai" + "lto:" + full;
     });
 
-    // Insert before the instagram link
     footer.insertBefore(emailSpan, footer.firstElementChild);
 })();
 
-// ── Resize ────────────────────────────────────────────────────
 window.addEventListener("resize", () => {
     const wasDesktop = isDesktop;
     isDesktop = window.innerWidth >= 768;
@@ -754,12 +643,7 @@ window.addEventListener("resize", () => {
     if (isDesktop && isProjectPageOpen) snapTrackToIndex(projectCurrentIndex, false);
 });
 
-// ── Init ──────────────────────────────────────────────────────
 window.addEventListener("load", () => {
-
     if (isDesktop) initDesktopProjectPage();
-    setTimeout(() => {
-        console.log("[VELAR DEBUG] setTimeout fired → runIntroAnimation()");
-        runIntroAnimation();
-    }, 100);
+    setTimeout(runIntroAnimation, 100);
 });

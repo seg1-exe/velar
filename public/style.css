@@ -698,6 +698,7 @@ body {
         position: relative;
         cursor: pointer;
         overflow: hidden;
+        margin: 10px 0;
     }
 
     /* Portrait items taller, landscape shorter, square balanced */
@@ -944,5 +945,104 @@ body {
     .logo-fixed {
         max-width: 60%;
         bottom: 10px;
+    }
+
+    /* ── Gallery overlay mobile ── */
+    .gallery-overlay {
+        position: fixed;
+        inset: 0;
+        background: #fff;
+        z-index: 2500;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        visibility: hidden;
+    }
+
+    .gallery-nav {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 20px;
+        box-sizing: border-box;
+        background: #fff;
+        z-index: 10;
+    }
+
+    .gallery-nav__logo {
+        height: 28px;
+        width: auto;
+        object-fit: contain;
+        cursor: pointer;
+    }
+
+    .gallery-nav__tabs {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+    }
+
+    .gallery-tab {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.10em;
+        color: #000;
+        padding: 0 0 2px;
+        border-bottom: 1px solid transparent;
+    }
+
+    .gallery-tab.is-active {
+        border-bottom-color: #000;
+    }
+
+    .gallery-nav__info {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.10em;
+        color: #000;
+        padding: 0;
+    }
+
+    .gallery-view {
+        padding: 8px 12px 60px;
+        box-sizing: border-box;
+    }
+
+    /* Grille 2 colonnes, sans effet décalé */
+    .gallery-case {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        padding-top: 0;
+        align-items: start;
+    }
+
+    .case-item {
+        margin-top: 0 !important;
+    }
+
+    .case-item--portrait img,
+    .case-item--landscape img,
+    .case-item--square img {
+        aspect-ratio: 3/4;
+    }
+
+    .case-item__title {
+        opacity: 1;
+        transform: none;
+        font-size: 10px;
+        margin-top: 6px;
     }
 }
