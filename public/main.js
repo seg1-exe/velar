@@ -115,8 +115,8 @@ function gotoSlide(index, direction) {
 
     gsap.timeline({
         onComplete: () => {
-            isAnimating = false;
             gsap.set(currentSlide, { visibility: "hidden", autoAlpha: 0, yPercent: 0 });
+            gsap.delayedCall(0.3, () => { isAnimating = false; });
         }
     }).to(nextSlide, { yPercent: 0, duration: 1, ease: "power4.inOut" });
 
@@ -332,6 +332,7 @@ const projectScrollObserver = Observer.create({
     target: projectPage,
     type: "wheel,touch",
     wheelSpeed: -1,
+    lockAxis: true,
     onUp:    () => { goToProjectIndex(projectCurrentIndex + 1); },
     onDown:  () => { goToProjectIndex(projectCurrentIndex - 1); },
     onLeft:  () => { goToProjectIndex(projectCurrentIndex + 1); },
@@ -357,7 +358,7 @@ function goToProjectIndex(newIndex) {
         projectCurrentIndex = next;
         if (isInfoExpanded) populateProjectMeta(next);
         playProjectVideo(next);
-        isProjectScrollAnimating = false;
+        gsap.delayedCall(0.3, () => { isProjectScrollAnimating = false; });
     };
 
     if (prev === total - 1 && next === 0) {
@@ -386,7 +387,7 @@ function goToProjectIndex(newIndex) {
         projectCurrentIndex = next;
         snapTrackToIndex(next, true);
         if (isInfoExpanded) populateProjectMeta(next);
-        gsap.delayedCall(1, () => {
+        gsap.delayedCall(1.3, () => {
             playProjectVideo(projectCurrentIndex);
             isProjectScrollAnimating = false;
         });
