@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/public/medias/icon.png">
-    <link rel="stylesheet" href="/public/reset.css">
-    <link rel="stylesheet" href="/public/style.css">
+    <link rel="icon" href="/medias/icon.png">
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="cf-2fa-verify" content="false">
     <!-- data-cfasync="false" tells Cloudflare not to obfuscate anything on this page -->
@@ -20,7 +20,7 @@
          DESKTOP NAVBAR (hidden on mobile)
     ───────────────────────────────────────────── -->
     <header class="desktop-nav">
-      <img class="desktop-nav__logo" src="/public/logoWhite.png" alt="Velar logo" draggable="false">
+      <img class="desktop-nav__logo" src="/logoWhite.png" alt="Velar logo" draggable="false">
       <span class="desktop-nav__project-title"></span>
       <nav class="desktop-nav__links">
         <button class="desktop-nav__btn" id="nav-index-case">INDEX/ CASE</button>
@@ -113,7 +113,7 @@
     </main>
 
     <!-- Mobile logo -->
-    <img class="logo-fixed" src="/public/logoWhite.png" alt="Velar logo" draggable="false">
+    <img class="logo-fixed" src="/logoWhite.png" alt="Velar logo" draggable="false">
 
     <!-- ─────────────────────────────────────────────
          DESKTOP PROJECT PAGE — horizontal gallery
@@ -122,7 +122,7 @@
 
       <!-- Project page nav -->
       <header class="project-nav">
-        <img class="project-nav__logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false" id="project-logo-back">
+        <img class="project-nav__logo" src="/logoBlack.png" alt="Velar logo" draggable="false" id="project-logo-back">
         <nav style="display:flex;gap:48px;align-items:center;">
           <button class="project-nav__btn" id="project-more-btn">MORE</button>
           <button class="project-nav__btn" id="project-info-btn">INFO</button>
@@ -274,7 +274,7 @@
 
       <!-- Header -->
       <header class="gallery-nav hidden-mobile">
-        <img class="gallery-nav__logo hidden-mobile" src="/public/logoBlack.png" alt="Velar logo" draggable="false" id="gallery-logo">
+        <img class="gallery-nav__logo hidden-mobile" src="/logoBlack.png" alt="Velar logo" draggable="false" id="gallery-logo">
         <nav class="gallery-nav__tabs hidden-mobile">
           <button class="gallery-tab" id="tab-index" data-tab="index">INDEX</button>
           <button class="gallery-tab" id="tab-case"  data-tab="case">CASE</button>
@@ -301,7 +301,7 @@
 
         <!-- Top bar: logo left, BACK right -->
         <div class="about-topbar">
-          <img class="about-logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false" onclick="closeAbout()">
+          <img class="about-logo" src="/logoBlack.png" alt="Velar logo" draggable="false" onclick="closeAbout()">
           <button class="about-back"><i class="fa-solid fa-arrow-up"></i> BACK</button>
         </div>
 
@@ -335,7 +335,7 @@
           </div>
 
           <div class="about-visual">
-            <img src="/public/assetAbout.png" alt="Visual">
+            <img src="/assetAbout.png" alt="Visual">
           </div>
         </div>
 
@@ -348,12 +348,6 @@
         </footer>
 
       </div>
-    </div>
-
-    <!-- Mobile CASE overlay -->
-    <div id="mobile-case">
-      <div class="mobile-case__header">CASE</div>
-      <div id="mobile-case-images"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
