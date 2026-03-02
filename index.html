@@ -282,63 +282,14 @@
         <button class="gallery-nav__info" id="gallery-info-btn">INFO</button>
       </header>
 
-      <!-- INDEX view — masonry-style grid of many images -->
+      <!-- INDEX view — même layout que CASE, peuplé via JS -->
       <div class="gallery-view" id="view-index">
-        <div class="gallery-masonry">
-          <!-- Row 1 — staggered tops -->
-          <div class="masonry-item masonry-item--tall"   data-col="1"><img src="public/medias/BOTANIQUE.png"    alt=""></div>
-          <div class="masonry-item masonry-item--mid"    data-col="2"><img src="public/medias/PIECES.png"       alt=""></div>
-          <div class="masonry-item masonry-item--xtall"  data-col="3"><img src="public/medias/I_KEPT_MY_NAME.png" alt=""></div>
-          <div class="masonry-item masonry-item--mid"    data-col="4"><img src="public/medias/TELES.png"        alt=""></div>
-          <div class="masonry-item masonry-item--tall"   data-col="5"><img src="public/medias/OVERTHINK.png"    alt=""></div>
-          <!-- Row 2 -->
-          <div class="masonry-item masonry-item--xtall"  data-col="1"><img src="public/medias/VILLE.png"       alt=""></div>
-          <div class="masonry-item masonry-item--tall"   data-col="2"><img src="public/medias/SOPARIS.png"      alt=""></div>
-          <div class="masonry-item masonry-item--mid"    data-col="3"><img src="public/medias/BOTANIQUE.png"    alt=""></div>
-          <div class="masonry-item masonry-item--xtall"  data-col="4"><img src="public/medias/PIECES.png"       alt=""></div>
-          <div class="masonry-item masonry-item--mid"    data-col="5"><img src="public/medias/TELES.png"        alt=""></div>
-          <!-- Row 3 -->
-          <div class="masonry-item masonry-item--mid"    data-col="1"><img src="public/medias/OVERTHINK.png"    alt=""></div>
-          <div class="masonry-item masonry-item--xtall"  data-col="2"><img src="public/medias/I_KEPT_MY_NAME.png" alt=""></div>
-          <div class="masonry-item masonry-item--tall"   data-col="3"><img src="public/medias/VILLE.png"        alt=""></div>
-          <div class="masonry-item masonry-item--mid"    data-col="4"><img src="public/medias/SOPARIS.png"      alt=""></div>
-          <div class="masonry-item masonry-item--tall"   data-col="5"><img src="public/medias/BOTANIQUE.png"    alt=""></div>
-        </div>
+        <div class="gallery-case" id="index-grid"></div>
       </div>
 
-      <!-- CASE view — 5-col scattered project thumbnails -->
+      <!-- CASE view — images du dossier case/, peuplées via JS -->
       <div class="gallery-view" id="view-case" style="display:none">
-        <div class="gallery-case">
-          <!-- Each project: one image placed in a specific column via CSS -->
-          <div class="case-item case-item--portrait" data-col="1" data-project="0">
-            <img src="public/medias/BOTANIQUE.png" alt="LIERAC">
-            <span class="case-item__title">LIERAC</span>
-          </div>
-          <div class="case-item case-item--landscape" data-col="2" data-project="1">
-            <img src="public/medias/PIECES.png" alt="BA&SH">
-            <span class="case-item__title">BA&amp;SH</span>
-          </div>
-          <div class="case-item case-item--landscape" data-col="3" data-project="2">
-            <img src="public/medias/I_KEPT_MY_NAME.png" alt="I KEPT MY NAME">
-            <span class="case-item__title">I KEPT MY NAME</span>
-          </div>
-          <div class="case-item case-item--portrait" data-col="4" data-project="3">
-            <img src="public/medias/TELES.png" alt="THE MAGIC IS">
-            <span class="case-item__title">THE MAGIC IS</span>
-          </div>
-          <div class="case-item case-item--portrait" data-col="5" data-project="4">
-            <img src="public/medias/OVERTHINK.png" alt="STOP OVERTHINKING">
-            <span class="case-item__title">STOP OVERTHINKING</span>
-          </div>
-          <div class="case-item case-item--portrait" data-col="1" data-project="5">
-            <img src="public/medias/VILLE.png" alt="RED">
-            <span class="case-item__title">RED</span>
-          </div>
-          <div class="case-item case-item--landscape" data-col="3" data-project="6">
-            <img src="public/medias/SOPARIS.png" alt="SO/PARIS">
-            <span class="case-item__title">SO/PARIS</span>
-          </div>
-        </div>
+        <div class="gallery-case" id="case-grid"></div>
       </div>
 
     </div><!-- /#gallery-overlay -->
@@ -350,7 +301,7 @@
 
         <!-- Top bar: logo left, BACK right -->
         <div class="about-topbar">
-          <img class="about-logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false">
+          <img class="about-logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false" onclick="closeAbout()">
           <button class="about-back"><i class="fa-solid fa-arrow-up"></i> BACK</button>
         </div>
 
@@ -384,9 +335,7 @@
           </div>
 
           <div class="about-visual">
-            <img src="/public/assetAbout.jpg" alt="Visual 1">
-            <img src="/public/assetAbout.jpg" alt="Visual 2">
-            <img src="/public/assetAbout.jpg" alt="Visual 3">
+            <img src="/public/assetAbout.png" alt="Visual">
           </div>
         </div>
 

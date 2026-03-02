@@ -155,10 +155,10 @@ function runIntroAnimation() {
     gsap.set(".loader",              { backgroundColor: "transparent", yPercent: 0, y: 0, force3D: true });
     gsap.set(".motion-blur-overlay", { yPercent: 0, force3D: true });
 
-    const duration    = 3;
+    const duration    = 2.5;
     const easing      = "power1.out";
     const proxy       = { frame: 0 };
-    const totalFrames = slides.length * 6 - 1;
+    const totalFrames = slides.length * 5 - 1;
     let   lastIndex   = -1;
 
     gsap.set(slides, { zIndex: 1, autoAlpha: 0, scale: 1 });
@@ -279,8 +279,10 @@ function closeProjectPage() {
         isInfoExpanded = false;
         isInfoAnimating = false;
         if (projectMoreBtn) projectMoreBtn.textContent = "MORE";
-        gsap.set(projectInfoMediaRow, { height: 0 });
-        projectInfoMediaRow.innerHTML = "";
+        if (projectInfoMediaRow) {
+            gsap.set(projectInfoMediaRow, { height: 0 });
+            projectInfoMediaRow.innerHTML = "";
+        }
     }
 
     gsap.to(projectPage, {
@@ -341,22 +343,52 @@ function goToProjectIndex(newIndex) {
     if (isProjectScrollAnimating) return;
     isProjectScrollAnimating = true;
 
-    const total = projectData.length;
-    newIndex = ((newIndex % total) + total) % total;
+    const total  = projectData.length;
+    const w      = window.innerWidth;
+    const panels = document.querySelectorAll(".project-panel");
+    const prev   = projectCurrentIndex;
+    const next   = ((newIndex % total) + total) % total;
 
-    stopProjectVideo(projectCurrentIndex);
-    projectCurrentIndex = newIndex;
-    snapTrackToIndex(newIndex, true);
+    stopProjectVideo(prev);
 
-    // Update meta text live if info panel is open
-    if (isInfoExpanded) {
-        populateProjectMeta(newIndex);
-    }
-
-    gsap.delayedCall(0.8, () => {
-        playProjectVideo(projectCurrentIndex);
+    const onDone = () => {
+        projectCurrentIndex = next;
+        if (isInfoExpanded) populateProjectMeta(next);
+        playProjectVideo(next);
         isProjectScrollAnimating = false;
-    });
+    };
+
+    if (prev === total - 1 && next === 0) {
+        // Wrap forward: place panel 0 one slot after the last, animate there, then reset silently
+        gsap.set(panels[0], { x: total * w });
+        gsap.to(projectTrack, {
+            x: -(total * w), duration: 1, ease: "power4.inOut",
+            onComplete: () => {
+                gsap.set(panels[0], { x: 0 });
+                gsap.set(projectTrack, { x: 0 });
+                onDone();
+            }
+        });
+    } else if (prev === 0 && next === total - 1) {
+        // Wrap backward: place last panel one slot before panel 0, animate there, then reset silently
+        gsap.set(panels[total - 1], { x: -(total * w) });
+        gsap.to(projectTrack, {
+            x: w, duration: 1, ease: "power4.inOut",
+            onComplete: () => {
+                gsap.set(panels[total - 1], { x: 0 });
+                gsap.set(projectTrack, { x: -((total - 1) * w) });
+                onDone();
+            }
+        });
+    } else {
+        projectCurrentIndex = next;
+        snapTrackToIndex(next, true);
+        if (isInfoExpanded) populateProjectMeta(next);
+        gsap.delayedCall(1, () => {
+            playProjectVideo(projectCurrentIndex);
+            isProjectScrollAnimating = false;
+        });
+    }
 }
 
 // ── Info panel state ──────────────────────────────────────────
@@ -481,6 +513,70 @@ function closeAbout() {
     });
 }
 
+// ── Gallery: populate INDEX and CASE grids ─────────────────────
+(function initGalleryGrids() {
+    const indexImages = [
+        { src: "public/medias/BOTANIQUE.png",     title: "LIERAC" },
+        { src: "public/medias/PIECES.png",         title: "BA&SH" },
+        { src: "public/medias/I_KEPT_MY_NAME.png", title: "I KEPT MY NAME" },
+        { src: "public/medias/TELES.png",          title: "THE MAGIC IS" },
+        { src: "public/medias/OVERTHINK.png",      title: "STOP OVERTHINKING" },
+        { src: "public/medias/VILLE.png",          title: "RED" },
+        { src: "public/medias/SOPARIS.png",        title: "SO/PARIS" },
+        { src: "public/medias/BOTANIQUE.png",      title: "LIERAC" },
+        { src: "public/medias/PIECES.png",         title: "BA&SH" },
+        { src: "public/medias/I_KEPT_MY_NAME.png", title: "I KEPT MY NAME" },
+        { src: "public/medias/TELES.png",          title: "THE MAGIC IS" },
+        { src: "public/medias/OVERTHINK.png",      title: "STOP OVERTHINKING" },
+        { src: "public/medias/VILLE.png",          title: "RED" },
+        { src: "public/medias/SOPARIS.png",        title: "SO/PARIS" },
+        { src: "public/medias/BOTANIQUE.png",      title: "LIERAC" },
+    ];
+
+    const caseImages = Array.from({ length: 15 }, (_, i) => ({
+        src: `public/medias/case/image${i + 1}.jpg`,
+        title: null
+    }));
+
+    const ratios = ['portrait', 'landscape', 'square'];
+
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function buildGrid(containerId, images) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        shuffle(images).forEach((item, i) => {
+            const ratio = ratios[Math.floor(Math.random() * ratios.length)];
+            const col   = (i % 5) + 1;
+            const div   = document.createElement('div');
+            div.className = `case-item case-item--${ratio}`;
+            div.style.gridColumn = String(col);
+            const img = document.createElement('img');
+            img.src = item.src;
+            img.alt = item.title || '';
+            img.draggable = false;
+            div.appendChild(img);
+            if (item.title) {
+                const span = document.createElement('span');
+                span.className = 'case-item__title';
+                span.textContent = item.title;
+                div.appendChild(span);
+            }
+            container.appendChild(div);
+        });
+    }
+
+    buildGrid('index-grid', indexImages);
+    buildGrid('case-grid', caseImages);
+})();
+
 // ── Gallery overlay ───────────────────────────────────────────
 function openGallery(tab = "index") {
     if (isGalleryAnimating || isGalleryOpen) return;
@@ -513,8 +609,8 @@ function switchGalleryTab(tab, animate = true) {
     // Update tab underlines
     if (tabIndex) tabIndex.classList.toggle("is-active", tab === "index");
     if (tabCase)  tabCase.classList.toggle("is-active",  tab === "case");
-    // Show/hide logo (hidden on CASE view per maquette)
-    if (galleryLogo) galleryLogo.classList.toggle("hidden", tab === "case");
+    // Logo toujours visible dans la gallery overlay
+    if (galleryLogo) galleryLogo.classList.remove("hidden");
     // Switch views
     if (viewIndex) viewIndex.style.display = tab === "index" ? "" : "none";
     if (viewCase)  viewCase.style.display  = tab === "case"  ? "" : "none";
@@ -526,6 +622,7 @@ if (galleryOverlay) {
     gsap.set(galleryOverlay, { yPercent: 100, autoAlpha: 0 });
 }
 
+if (galleryLogo) galleryLogo.addEventListener("click", e => { e.stopPropagation(); closeGallery(); });
 if (tabIndex) tabIndex.addEventListener("click", e => { e.stopPropagation(); switchGalleryTab("index"); });
 if (tabCase)  tabCase.addEventListener("click",  e => { e.stopPropagation(); switchGalleryTab("case");  });
 
