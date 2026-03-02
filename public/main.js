@@ -574,6 +574,17 @@ if (tabIndex)      tabIndex.addEventListener("click",      e => { e.stopPropagat
 if (tabCase)       tabCase.addEventListener("click",       e => { e.stopPropagation(); switchGalleryTab("case"); });
 if (galleryInfoBtn) galleryInfoBtn.addEventListener("click", e => { e.stopPropagation(); openAbout(); });
 
+if (galleryOverlay) {
+    Observer.create({
+        target: galleryOverlay,
+        type: "touch",
+        lockAxis: true,
+        onLeft: () => { if (!isDesktop) closeGallery(); },
+        tolerance: 20,
+        preventDefault: false
+    });
+}
+
 document.querySelectorAll(".case-item").forEach(item => {
     item.addEventListener("click", e => {
         e.stopPropagation();

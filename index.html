@@ -273,13 +273,13 @@
     <div class="gallery-overlay" id="gallery-overlay">
 
       <!-- Header -->
-      <header class="gallery-nav">
-        <img class="gallery-nav__logo" src="/public/logoBlack.png" alt="Velar logo" draggable="false" id="gallery-logo">
-        <nav class="gallery-nav__tabs">
+      <header class="gallery-nav hidden-mobile">
+        <img class="gallery-nav__logo hidden-mobile" src="/public/logoBlack.png" alt="Velar logo" draggable="false" id="gallery-logo">
+        <nav class="gallery-nav__tabs hidden-mobile">
           <button class="gallery-tab" id="tab-index" data-tab="index">INDEX</button>
           <button class="gallery-tab" id="tab-case"  data-tab="case">CASE</button>
         </nav>
-        <button class="gallery-nav__info" id="gallery-info-btn">INFO</button>
+        <button class="gallery-nav__info hidden-mobile" id="gallery-info-btn">INFO</button>
       </header>
 
       <!-- INDEX view — même layout que CASE, peuplé via JS -->
@@ -348,6 +348,12 @@
         </footer>
 
       </div>
+    </div>
+
+    <!-- Mobile CASE overlay -->
+    <div id="mobile-case">
+      <div class="mobile-case__header">CASE</div>
+      <div id="mobile-case-images"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
