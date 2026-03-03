@@ -96,9 +96,13 @@ function gotoSlide(index, direction) {
 
     updateDesktopNavTitle(index);
 
+    const nextTitle = !isDesktop ? nextSlide.querySelector(".title") : null;
+    if (nextTitle) gsap.set(nextTitle, { opacity: 0, y: -15 });
+
     gsap.timeline({
         onComplete: () => {
             gsap.set(currentSlide, { visibility: "hidden", autoAlpha: 0, yPercent: 0 });
+            if (nextTitle) gsap.to(nextTitle, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
             gsap.delayedCall(0.3, () => { isAnimating = false; });
         }
     }).to(nextSlide, { yPercent: 0, duration: 1, ease: "power4.inOut" });
@@ -201,6 +205,11 @@ function runIntroAnimation() {
 
                     if (isDesktop && desktopNav) gsap.to(desktopNav, { autoAlpha: 1, duration: 0.5 });
                     if (!isDesktop && logoFixed)  gsap.to(logoFixed,  { autoAlpha: 1, duration: 0.5 });
+
+                    if (!isDesktop) {
+                        const firstTitle = firstSlide.querySelector(".title");
+                        if (firstTitle) gsap.fromTo(firstTitle, { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out", delay: 0.2 });
+                    }
                 }
             });
 
