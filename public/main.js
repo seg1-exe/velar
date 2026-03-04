@@ -103,9 +103,9 @@ function gotoSlide(index, direction) {
         onComplete: () => {
             gsap.set(currentSlide, { visibility: "hidden", autoAlpha: 0, yPercent: 0 });
             if (nextTitle) gsap.to(nextTitle, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
-            gsap.delayedCall(0.3, () => { isAnimating = false; });
+            isAnimating = false;
         }
-    }).to(nextSlide, { yPercent: 0, duration: 1, ease: "power4.inOut" });
+    }).to(nextSlide, { yPercent: 0, duration: 0.9, ease: "expo.inOut" });
 
     currentIndex = index;
 }
@@ -152,7 +152,7 @@ function runIntroAnimation() {
     gsap.set(".loader",              { backgroundColor: "transparent", yPercent: 0, y: 0, force3D: true });
     gsap.set(".motion-blur-overlay", { yPercent: 0, force3D: true });
 
-    const duration    = 2.5;
+    const duration    = 1.5;
     const easing      = "power1.out";
     const proxy       = { frame: 0 };
     const totalFrames = slides.length * 5 - 1;
@@ -214,8 +214,8 @@ function runIntroAnimation() {
             });
 
             pressTl
-                .to(slidesContainer, { scale: 0.8, duration: 1,   ease: "power3.inOut" })
-                .to(slidesContainer, { scale: 1,   duration: 0.6, ease: "power3.out"   });
+                .to(slidesContainer, { scale: 0.93, duration: 0.7, ease: "power3.inOut" })
+                .to(slidesContainer, { scale: 1,    duration: 0.5, ease: "power3.out"   });
         }
     });
 }
@@ -226,7 +226,7 @@ function initDesktopProjectPage() {
     gsap.set(desktopNav,  { autoAlpha: 0 });
 }
 
-function openProjectPage(startIndex) {
+function openProjectPage(startIndex, onOpened) {
     if (!isDesktop || isProjectAnimating || isProjectPageOpen) return;
     isProjectAnimating = true;
 
@@ -248,6 +248,7 @@ function openProjectPage(startIndex) {
             slideObserver.disable();
             playProjectVideo(projectCurrentIndex);
             projectScrollObserver.enable();
+            if (onOpened) onOpened();
         }
     });
 }
@@ -284,7 +285,7 @@ function closeProjectPage() {
 function snapTrackToIndex(index, animate) {
     const x = -(index * window.innerWidth);
     if (animate) {
-        gsap.to(projectTrack,  { x, duration: 1, ease: "power4.inOut" });
+        gsap.to(projectTrack,  { x, duration: 0.9, ease: "expo.inOut" });
     } else {
         gsap.set(projectTrack, { x });
     }
@@ -356,7 +357,7 @@ function goToProjectIndex(newIndex) {
     if (prev === total - 1 && next === 0) {
         gsap.set(panels[0], { x: total * w });
         gsap.to(projectTrack, {
-            x: -(total * w), duration: 1, ease: "power4.inOut",
+            x: -(total * w), duration: 0.9, ease: "expo.inOut",
             onComplete: () => {
                 gsap.set(panels[0], { x: 0 });
                 gsap.set(projectTrack, { x: 0 });
@@ -366,7 +367,7 @@ function goToProjectIndex(newIndex) {
     } else if (prev === 0 && next === total - 1) {
         gsap.set(panels[total - 1], { x: -(total * w) });
         gsap.to(projectTrack, {
-            x: w, duration: 1, ease: "power4.inOut",
+            x: w, duration: 0.9, ease: "expo.inOut",
             onComplete: () => {
                 gsap.set(panels[total - 1], { x: 0 });
                 gsap.set(projectTrack, { x: -((total - 1) * w) });
@@ -377,10 +378,7 @@ function goToProjectIndex(newIndex) {
         projectCurrentIndex = next;
         snapTrackToIndex(next, true);
         if (isInfoExpanded) populateProjectMeta(next);
-        gsap.delayedCall(1.3, () => {
-            playProjectVideo(projectCurrentIndex);
-            isProjectScrollAnimating = false;
-        });
+        gsap.delayedCall(0.9, () => { playProjectVideo(projectCurrentIndex); isProjectScrollAnimating = false; });
     }
 }
 
@@ -488,13 +486,13 @@ function closeAbout() {
 
 (function initGalleryGrids() {
     const indexImages = [
-        { src: "medias/BOTANIQUE.png",      title: "LIERAC" },
-        { src: "medias/PIECES.png",          title: "BA&SH" },
-        { src: "medias/I_KEPT_MY_NAME.png",  title: "I KEPT MY NAME" },
-        { src: "medias/TELES.png",           title: "THE MAGIC IS" },
-        { src: "medias/OVERTHINK.png",       title: "STOP OVERTHINKING" },
-        { src: "medias/VILLE.png",           title: "RED" },
-        { src: "medias/SOPARIS.png",         title: "SO/PARIS" },
+        { src: "medias/BOTANIQUE.png",      title: "LIERAC",           projectIndex: 0 },
+        { src: "medias/PIECES.png",          title: "BA&SH",            projectIndex: 1 },
+        { src: "medias/I_KEPT_MY_NAME.png",  title: "I KEPT MY NAME",   projectIndex: 2 },
+        { src: "medias/TELES.png",           title: "THE MAGIC IS",     projectIndex: 3 },
+        { src: "medias/OVERTHINK.png",       title: "STOP OVERTHINKING", projectIndex: 4 },
+        { src: "medias/VILLE.png",           title: "RED",              projectIndex: 5 },
+        { src: "medias/SOPARIS.png",         title: "SO/PARIS",         projectIndex: 6 },
     ];
 
     const caseImages = Array.from({ length: 15 }, (_, i) => ({
@@ -522,6 +520,7 @@ function closeAbout() {
             const div   = document.createElement('div');
             div.className = `case-item case-item--${ratio}`;
             div.style.gridColumn = String(col);
+            if (item.projectIndex !== undefined) div.dataset.project = item.projectIndex;
             const img = document.createElement('img');
             img.src = item.src;
             img.alt = item.title || '';
@@ -600,7 +599,7 @@ document.querySelectorAll(".case-item").forEach(item => {
         const projectIndex = parseInt(item.dataset.project, 10);
         if (isNaN(projectIndex)) return;
         closeGallery();
-        gsap.delayedCall(0.4, () => openProjectPage(projectIndex));
+        gsap.delayedCall(0.4, () => openProjectPage(projectIndex, openProjectInfo));
     });
 });
 
