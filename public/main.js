@@ -116,7 +116,19 @@ function updateDesktopNavTitle(index) {
     desktopNavTitle.classList.add("visible");
 }
 
+let slideGestureActive = false;
+let slideGestureTimer  = null;
+
+let projGestureActive = false;
+let projGestureTimer  = null;
+
 function onSlideScroll(direction) {
+    clearTimeout(slideGestureTimer);
+    slideGestureTimer = setTimeout(() => { slideGestureActive = false; }, 400);
+
+    if (slideGestureActive) return;
+    slideGestureActive = true;
+
     if (isAnimating) return;
     direction > 0
         ? gotoSlide(currentIndex + 1 >= slides.length ? 0 : currentIndex + 1, "down")
@@ -301,6 +313,12 @@ function stopAllProjectVideos() {
 }
 
 function onProjectScroll(direction) {
+    clearTimeout(projGestureTimer);
+    projGestureTimer = setTimeout(() => { projGestureActive = false; }, 400);
+
+    if (projGestureActive) return;
+    projGestureActive = true;
+
     goToProjectIndex(projectCurrentIndex + direction);
 }
 
