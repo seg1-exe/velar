@@ -116,20 +116,11 @@ function updateDesktopNavTitle(index) {
     desktopNavTitle.classList.add("visible");
 }
 
-let slideGestureActive  = false;
-let slideGestureTimer   = null;
-
 function onSlideScroll(direction) {
-    if (!slideGestureActive) {
-        slideGestureActive = true;
-        if (!isAnimating) {
-            direction > 0
-                ? gotoSlide(currentIndex + 1 >= slides.length ? 0 : currentIndex + 1, "down")
-                : gotoSlide(currentIndex - 1 < 0 ? slides.length - 1 : currentIndex - 1, "up");
-        }
-    }
-    clearTimeout(slideGestureTimer);
-    slideGestureTimer = setTimeout(() => { slideGestureActive = false; }, 200);
+    if (isAnimating) return;
+    direction > 0
+        ? gotoSlide(currentIndex + 1 >= slides.length ? 0 : currentIndex + 1, "down")
+        : gotoSlide(currentIndex - 1 < 0 ? slides.length - 1 : currentIndex - 1, "up");
 }
 
 const slideObserver = Observer.create({
@@ -309,16 +300,8 @@ function stopAllProjectVideos() {
     document.querySelectorAll(".project-panel .project-video").forEach(v => v.pause());
 }
 
-let projGestureActive = false;
-let projGestureTimer  = null;
-
 function onProjectScroll(direction) {
-    if (!projGestureActive) {
-        projGestureActive = true;
-        goToProjectIndex(projectCurrentIndex + direction);
-    }
-    clearTimeout(projGestureTimer);
-    projGestureTimer = setTimeout(() => { projGestureActive = false; }, 200);
+    goToProjectIndex(projectCurrentIndex + direction);
 }
 
 const projectScrollObserver = Observer.create({
