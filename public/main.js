@@ -68,7 +68,9 @@ function applyScroll(y) {
     slides.forEach((s, i) => {
         let pos = ((i * h - y) % total + total) % total;
         if (pos > total / 2) pos -= total;
-        gsap.set(s, { y: pos });
+        // Explicitly hide slides outside the viewport — Safari GPU layers
+        // can bleed through overflow:hidden, so we control visibility directly.
+        gsap.set(s, { y: pos, visibility: Math.abs(pos) < h ? "visible" : "hidden" });
     });
 }
 
