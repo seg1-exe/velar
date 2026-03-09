@@ -564,8 +564,8 @@
 
     /* The actual scrolling track */
     .project-track {
-        position: relative;
-        height: 100%;
+        position: absolute;
+        inset: 0;
         will-change: transform;
     }
 
