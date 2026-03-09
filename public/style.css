@@ -57,6 +57,7 @@
     position: relative;
     z-index: 1;
     pointer-events: none;
+    overflow: hidden;
 }
 
 /* ── Individual slides ── */

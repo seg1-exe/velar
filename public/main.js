@@ -50,6 +50,7 @@ let isAboutAnimating         = false;
 let targetScrollY  = 0;
 let smoothScrollY  = 0;
 let isSnapping     = false;
+let snapTween      = null;
 let snapTimeout    = null;
 let scrollEnabled  = false;
 
@@ -105,7 +106,7 @@ function snapToSlide(index) {
     const dest  = getSnapDest(index);
     const proxy = { val: smoothScrollY };
 
-    gsap.to(proxy, {
+    snapTween = gsap.to(proxy, {
         val:      dest,
         duration: 0.9,
         ease:     "power3.out",
@@ -115,6 +116,7 @@ function snapToSlide(index) {
             applyScroll(smoothScrollY);
         },
         onComplete: () => {
+            snapTween     = null;
             smoothScrollY = dest;
             targetScrollY = dest;
             currentIndex  = index;
@@ -159,30 +161,62 @@ function onWheel(e) {
 }
 
 // ── TOUCH HANDLER ─────────────────────────────────────────────────────────────
-let _touchStartX = 0;
-let _touchStartY = 0;
+let _touchStartX       = 0;
+let _touchStartY       = 0;
+let _touchStartScrollY = 0;
+let _touchIsVertical   = null; // determined on first move
 
 function onTouchStart(e) {
     if (!scrollEnabled || isProjectPageOpen || isGalleryOpen) return;
-    _touchStartX = e.touches[0].clientX;
-    _touchStartY = e.touches[0].clientY;
+    _touchStartX       = e.touches[0].clientX;
+    _touchStartY       = e.touches[0].clientY;
+    _touchStartScrollY = smoothScrollY;
+    _touchIsVertical   = null;
+
+    // Cancel any in-progress snap so the finger takes over immediately
+    if (snapTween) {
+        snapTween.kill();
+        snapTween  = null;
+        isSnapping = false;
+    }
+    clearTimeout(snapTimeout);
+}
+
+function onTouchMove(e) {
+    if (!scrollEnabled || isProjectPageOpen || isGalleryOpen) return;
+
+    const dx = _touchStartX - e.touches[0].clientX;
+    const dy = _touchStartY - e.touches[0].clientY;
+
+    // Determine axis on first significant move
+    if (_touchIsVertical === null && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+        _touchIsVertical = Math.abs(dy) >= Math.abs(dx);
+    }
+
+    if (!_touchIsVertical) return; // horizontal swipe → don't interfere
+
+    e.preventDefault(); // block native scroll
+
+    const newY = _touchStartScrollY + dy;
+    smoothScrollY = newY;
+    targetScrollY = newY;
+    applyScroll(newY);
 }
 
 function onTouchEnd(e) {
     if (!scrollEnabled || isProjectPageOpen || isGalleryOpen) return;
+
     const dx = _touchStartX - e.changedTouches[0].clientX;
     const dy = _touchStartY - e.changedTouches[0].clientY;
 
     // Horizontal swipe right → gallery (mobile)
-    if (!isDesktop && Math.abs(dx) > Math.abs(dy) && dx < -40) {
+    if (!isDesktop && _touchIsVertical === false && dx < -40) {
         openGallery("case");
         return;
     }
-    // Vertical swipe
-    if (Math.abs(dy) < 20 || Math.abs(dy) < Math.abs(dx)) return;
-    if (isSnapping) return;
-    targetScrollY += dy * 1.8;
-    scheduleMagneticSnap();
+
+    // Snap from current drag position
+    if (_touchIsVertical) doMagneticSnap();
 }
 
 // ── HORIZONTAL SMOOTH SCROLL + MAGNETIC SNAP (PROJECT PAGE) ──────────────────
@@ -411,6 +445,7 @@ function runIntroAnimation() {
 
                     window.addEventListener("wheel",      onWheel,      { passive: false });
                     window.addEventListener("touchstart", onTouchStart, { passive: true });
+                    window.addEventListener("touchmove",  onTouchMove,  { passive: false });
                     window.addEventListener("touchend",   onTouchEnd,   { passive: true });
 
                     updateDesktopNavTitle(0);
