@@ -1,0 +1,84 @@
+{
+  "projects": [
+    {
+      "title": "LIERAC",
+      "description": "A botanical journey into the heart of LIERAC's serum. We crafted a visual narrative around transparency, purity, and the living intelligence of plants.",
+      "tags": ["CGI", "AI", "Art Direction"],
+      "date": "2024",
+      "video": "medias/botanique.mp4",
+      "thumb": "medias/BOTANIQUE.png",
+      "photos": ["medias/BOTANIQUE.png", "medias/BOTANIQUE.png"]
+    },
+    {
+      "title": "BA&SH",
+      "description": "Pieces that move. A social-first campaign celebrating freedom of expression through garments that live and breathe on screen.",
+      "tags": ["Narrative Production", "Social-First Content", "Post Production"],
+      "date": "2024",
+      "video": "medias/pieces.mp4",
+      "thumb": "medias/PIECES.png",
+      "photos": ["medias/PIECES.png", "medias/PIECES.png"]
+    },
+    {
+      "title": "I KEPT MY NAME",
+      "description": "Identity as resistance. A film exploring what it means to hold onto yourself when the world tries to rename you.",
+      "tags": ["Narrative Production", "Art Direction", "Post Production"],
+      "date": "2023",
+      "video": "medias/ikeptmyname.mp4",
+      "thumb": "medias/I_KEPT_MY_NAME.png",
+      "photos": ["medias/I_KEPT_MY_NAME.png", "medias/I_KEPT_MY_NAME.png"]
+    },
+    {
+      "title": "THE MAGIC IS",
+      "description": "The invisible made tangible. A campaign built around the sensation of transformation—before and after the moment that changes everything.",
+      "tags": ["CGI", "Motion Design", "Art Direction"],
+      "date": "2023",
+      "video": "medias/teles.mp4",
+      "thumb": "medias/TELES.png",
+      "photos": ["medias/TELES.png", "medias/TELES.png"]
+    },
+    {
+      "title": "STOP OVERTHINKING",
+      "description": "A manifesto in motion. Structured chaos, interrupted thoughts, and the beauty of letting go—translated into a visual language for a new generation.",
+      "tags": ["Social-First Content", "Motion Design", "AI"],
+      "date": "2024",
+      "video": "medias/overthink.mp4",
+      "thumb": "medias/OVERTHINK.png",
+      "photos": ["medias/OVERTHINK.png", "medias/OVERTHINK.png"]
+    },
+    {
+      "title": "RED",
+      "description": "Paris at night, reimagined. A city that pulses with desire, tension, and color—captured in a campaign that refuses to be quiet.",
+      "tags": ["Narrative Production", "Post Production", "Art Direction"],
+      "date": "2024",
+      "video": "medias/villeparis.mp4",
+      "thumb": "medias/VILLE.png",
+      "photos": ["medias/VILLE.png", "medias/VILLE.png"]
+    },
+    {
+      "title": "SO/PARIS",
+      "description": "Luxury hospitality seen through a new lens. An experience campaign that blurs the line between a hotel stay and a state of mind.",
+      "tags": ["CGI", "Art Direction", "Post Production"],
+      "date": "2023",
+      "video": "medias/soparis.mp4",
+      "thumb": "medias/SOPARIS.png",
+      "photos": ["medias/SOPARIS.png", "medias/SOPARIS.png"]
+    }
+  ],
+  "case": [
+    "medias/case/image1.jpg",
+    "medias/case/image2.jpg",
+    "medias/case/image3.jpg",
+    "medias/case/image4.jpg",
+    "medias/case/image5.jpg",
+    "medias/case/image6.jpg",
+    "medias/case/image7.jpg",
+    "medias/case/image8.jpg",
+    "medias/case/image9.jpg",
+    "medias/case/image10.jpg",
+    "medias/case/image11.jpg",
+    "medias/case/image12.jpg",
+    "medias/case/image13.jpg",
+    "medias/case/image14.jpg",
+    "medias/case/image15.jpg"
+  ]
+}

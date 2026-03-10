@@ -1021,6 +1021,10 @@
         font-size: 16px;
     }
 
+    .about-address {
+        margin-top: 20px;
+    }
+
     .about-services {
         grid-template-columns: 1fr;
         gap: 16px;

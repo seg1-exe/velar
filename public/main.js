@@ -1,13 +1,12 @@
 gsap.registerPlugin(Observer);
 
-const slides               = document.querySelectorAll(".slide");
+// ── STATIC DOM REFERENCES ─────────────────────────────────────────────────────
 const slidesContainer      = document.querySelector(".slides-container");
 const logoFixed            = document.querySelector(".logo-fixed");
 const aboutOverlay         = document.querySelector(".about-overlay");
 const aboutBack            = document.querySelector(".about-back");
 
 const desktopNav           = document.querySelector(".desktop-nav");
-const desktopNavLogo       = document.querySelector(".desktop-nav__logo");
 const desktopNavTitle      = document.querySelector(".desktop-nav__project-title");
 const navIndexCase         = document.getElementById("nav-index-case");
 const navInfo              = document.getElementById("nav-info");
@@ -19,10 +18,6 @@ const tabCase              = document.getElementById("tab-case");
 const viewIndex            = document.getElementById("view-index");
 const viewCase             = document.getElementById("view-case");
 const galleryInfoBtn       = document.getElementById("gallery-info-btn");
-
-let isGalleryOpen          = false;
-let isGalleryAnimating     = false;
-let currentGalleryTab      = "index";
 
 const projectPage          = document.getElementById("project-page");
 const projectLogoBack      = document.getElementById("project-logo-back");
@@ -36,31 +31,36 @@ const projectInfoMetaDesc  = document.getElementById("project-info-meta-desc");
 const projectInfoMetaTags  = document.getElementById("project-info-meta-tags");
 const projectInfoMetaDate  = document.getElementById("project-info-meta-date");
 
-let currentIndex             = 0;
-let introHasPlayed           = false;
-let isDesktop                = window.innerWidth >= 768;
+// ── APP STATE ─────────────────────────────────────────────────────────────────
+let slides      = [];   // populated after buildSlides()
+let projectData = [];   // populated from data.json
 
-let projectCurrentIndex      = 0;
-let isProjectPageOpen        = false;
-let isProjectAnimating       = false;
+let currentIndex     = 0;
+let introHasPlayed   = false;
+let isDesktop        = window.innerWidth >= 768;
 
-let isAboutAnimating         = false;
+let projectCurrentIndex = 0;
+let isProjectPageOpen   = false;
+let isProjectAnimating  = false;
 
-// ── SMOOTH SCROLL + MAGNETIC SNAP ────────────────────────────────────────────
-let targetScrollY  = 0;
-let smoothScrollY  = 0;
-let isSnapping     = false;
-let snapTween      = null;
-let snapTimeout    = null;
-let scrollEnabled  = false;
+let isAboutAnimating  = false;
+let isGalleryOpen     = false;
+let isGalleryAnimating = false;
+let currentGalleryTab = "index";
 
-const SNAP_THRESHOLD = 0.28; // fraction of a slide height → triggers snap to next
+// ── SMOOTH SCROLL + MAGNETIC SNAP (vertical) ──────────────────────────────────
+let targetScrollY = 0;
+let smoothScrollY = 0;
+let isSnapping    = false;
+let snapTween     = null;
+let snapTimeout   = null;
+let scrollEnabled = false;
+
+const SNAP_THRESHOLD = 0.28;
 
 function getSlideH() { return window.innerHeight; }
 function getTotal()  { return slides.length * getSlideH(); }
 
-// Position each slide individually for infinite wrapping.
-// y is unbounded; slides wrap around so the right one is always in view.
 function applyScroll(y) {
     const h     = getSlideH();
     const total = getTotal();
@@ -68,13 +68,10 @@ function applyScroll(y) {
     slides.forEach((s, i) => {
         let pos = ((i * h - y) % total + total) % total;
         if (pos > total / 2) pos -= total;
-        // Explicitly hide slides outside the viewport — Safari GPU layers
-        // can bleed through overflow:hidden, so we control visibility directly.
         gsap.set(s, { y: pos, visibility: Math.abs(pos) < h ? "visible" : "hidden" });
     });
 }
 
-// Returns the nearest snap destination for slide `index` relative to current y.
 function getSnapDest(index) {
     const h     = getSlideH();
     const total = getTotal();
@@ -90,14 +87,12 @@ function scheduleMagneticSnap() {
 
 function doMagneticSnap() {
     if (isSnapping) return;
-    const h     = getSlideH();
-    const N     = slides.length;
-    const total = getTotal();
-    // Normalize scroll position to [0, N)
-    const norm  = ((smoothScrollY / h) % N + N) % N;
-    const base  = Math.floor(norm);
-    const frac  = norm - base;
-    const idx   = frac >= SNAP_THRESHOLD ? (base + 1) % N : base;
+    const h    = getSlideH();
+    const N    = slides.length;
+    const norm = ((smoothScrollY / h) % N + N) % N;
+    const base = Math.floor(norm);
+    const frac = norm - base;
+    const idx  = frac >= SNAP_THRESHOLD ? (base + 1) % N : base;
     snapToSlide(idx);
 }
 
@@ -125,7 +120,6 @@ function snapToSlide(index) {
             updateDesktopNavTitle(index);
             isSnapping = false;
 
-            // Mobile: animate title in for current slide
             if (!isDesktop) {
                 slides.forEach((s, i) => {
                     const title = s.querySelector(".title");
@@ -144,7 +138,6 @@ function snapToSlide(index) {
     });
 }
 
-// Smooth ticker
 gsap.ticker.add(() => {
     if (!scrollEnabled || isSnapping) return;
     const diff = targetScrollY - smoothScrollY;
@@ -166,7 +159,7 @@ function onWheel(e) {
 let _touchStartX       = 0;
 let _touchStartY       = 0;
 let _touchStartScrollY = 0;
-let _touchIsVertical   = null; // determined on first move
+let _touchIsVertical   = null;
 
 function onTouchStart(e) {
     if (!scrollEnabled || isProjectPageOpen || isGalleryOpen) return;
@@ -175,7 +168,6 @@ function onTouchStart(e) {
     _touchStartScrollY = smoothScrollY;
     _touchIsVertical   = null;
 
-    // Cancel any in-progress snap so the finger takes over immediately
     if (snapTween) {
         snapTween.kill();
         snapTween  = null;
@@ -186,19 +178,15 @@ function onTouchStart(e) {
 
 function onTouchMove(e) {
     if (!scrollEnabled || isProjectPageOpen || isGalleryOpen) return;
-
     const dx = _touchStartX - e.touches[0].clientX;
     const dy = _touchStartY - e.touches[0].clientY;
 
-    // Determine axis on first significant move
     if (_touchIsVertical === null && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
         _touchIsVertical = Math.abs(dy) >= Math.abs(dx);
     }
+    if (!_touchIsVertical) return;
 
-    if (!_touchIsVertical) return; // horizontal swipe → don't interfere
-
-    e.preventDefault(); // block native scroll
-
+    e.preventDefault();
     const newY = _touchStartScrollY + dy;
     smoothScrollY = newY;
     targetScrollY = newY;
@@ -207,21 +195,16 @@ function onTouchMove(e) {
 
 function onTouchEnd(e) {
     if (!scrollEnabled || isProjectPageOpen || isGalleryOpen) return;
-
     const dx = _touchStartX - e.changedTouches[0].clientX;
-    const dy = _touchStartY - e.changedTouches[0].clientY;
 
-    // Horizontal swipe right → gallery (mobile)
     if (!isDesktop && _touchIsVertical === false && dx < -40) {
         openGallery("case");
         return;
     }
-
-    // Snap from current drag position
     if (_touchIsVertical) doMagneticSnap();
 }
 
-// ── HORIZONTAL SMOOTH SCROLL + MAGNETIC SNAP (PROJECT PAGE) ──────────────────
+// ── HORIZONTAL SMOOTH SCROLL + MAGNETIC SNAP (project page) ──────────────────
 let targetScrollX        = 0;
 let smoothScrollX        = 0;
 let isSnappingH          = false;
@@ -232,8 +215,8 @@ function getPanelW()     { return window.innerWidth; }
 function getPanelTotal() { return projectData.length * getPanelW(); }
 
 function applyHScroll(x) {
-    const w     = getPanelW();
-    const total = getPanelTotal();
+    const w      = getPanelW();
+    const total  = getPanelTotal();
     const panels = document.querySelectorAll(".project-panel");
     panels.forEach((p, i) => {
         let pos = ((i * w - x) % total + total) % total;
@@ -272,6 +255,12 @@ function snapToProjectSlide(index) {
 
     stopProjectVideo(projectCurrentIndex);
 
+    if (isInfoExpanded) {
+        gsap.to([projectInfoMetaTitle, projectInfoMetaDesc, projectInfoMetaTags, projectInfoMetaDate], {
+            opacity: 0, duration: 0.2, ease: "power2.in"
+        });
+    }
+
     const dest  = getSnapDestH(index);
     const proxy = { val: smoothScrollX };
 
@@ -288,14 +277,20 @@ function snapToProjectSlide(index) {
             smoothScrollX       = dest;
             targetScrollX       = dest;
             projectCurrentIndex = index;
-            if (isInfoExpanded) populateProjectMeta(index);
+            if (isInfoExpanded) {
+                populateProjectMeta(index);
+                gsap.fromTo(
+                    [projectInfoMetaTitle, projectInfoMetaDesc, projectInfoMetaTags, projectInfoMetaDate],
+                    { opacity: 0 },
+                    { opacity: 1, duration: 0.35, ease: "power2.out" }
+                );
+            }
             playProjectVideo(index);
             isSnappingH = false;
         }
     });
 }
 
-// Smooth ticker — project horizontal
 gsap.ticker.add(() => {
     if (!projectScrollEnabled || isSnappingH) return;
     const diff = targetScrollX - smoothScrollX;
@@ -333,16 +328,47 @@ function onProjectTouchEnd(e) {
     scheduleMagneticSnapH();
 }
 
-// ── PROJECT DATA ──────────────────────────────────────────────────────────────
-const projectData = [
-    { title: "LIERAC",            description: "A botanical journey into the heart of LIERAC's serum. We crafted a visual narrative around transparency, purity, and the living intelligence of plants.", tags: "CGI\nAI\nArt Direction",                                    date: "2024" },
-    { title: "BA&SH",             description: "Pieces that move. A social-first campaign celebrating freedom of expression through garments that live and breathe on screen.",                          tags: "Narrative Production\nSocial-First Content\nPost Production", date: "2024" },
-    { title: "I KEPT MY NAME",    description: "Identity as resistance. A film exploring what it means to hold onto yourself when the world tries to rename you.",                                      tags: "Narrative Production\nArt Direction\nPost Production",         date: "2023" },
-    { title: "THE MAGIC IS",      description: "The invisible made tangible. A campaign built around the sensation of transformation—before and after the moment that changes everything.",             tags: "CGI\nMotion Design\nArt Direction",                            date: "2023" },
-    { title: "STOP OVERTHINKING", description: "A manifesto in motion. Structured chaos, interrupted thoughts, and the beauty of letting go—translated into a visual language for a new generation.", tags: "Social-First Content\nMotion Design\nAI",                      date: "2024" },
-    { title: "RED",               description: "Paris at night, reimagined. A city that pulses with desire, tension, and color—captured in a campaign that refuses to be quiet.",                      tags: "Narrative Production\nPost Production\nArt Direction",         date: "2024" },
-    { title: "SO/PARIS",          description: "Luxury hospitality seen through a new lens. An experience campaign that blurs the line between a hotel stay and a state of mind.",                     tags: "CGI\nArt Direction\nPost Production",                          date: "2023" }
-];
+// ── DOM BUILDERS ──────────────────────────────────────────────────────────────
+function buildSlides(projects) {
+    projects.forEach((p, i) => {
+        const section = document.createElement("section");
+        section.className    = "slide";
+        section.dataset.index = i;
+        section.dataset.title = p.title;
+        section.innerHTML = `
+            <div class="slide-content">
+                <h2 class="title">${p.title}</h2>
+            </div>
+            <div class="media-container">
+                <video muted loop playsinline poster="${p.thumb}">
+                    <source src="${p.video}" type="video/mp4">
+                </video>
+            </div>`;
+        slidesContainer.appendChild(section);
+    });
+}
+
+function buildProjectPanels(projects) {
+    projects.forEach((p, i) => {
+        const article = document.createElement("article");
+        article.className       = "project-panel";
+        article.dataset.project = i;
+        const photosHTML = (p.photos || []).map(src => `
+                <div class="project-cell project-cell--photo">
+                    <img src="${src}" alt="${p.title}" draggable="false">
+                </div>`).join("");
+        article.innerHTML = `
+            <div class="project-media-grid">
+                <div class="project-cell project-cell--video">
+                    <video class="project-video" muted loop playsinline poster="${p.thumb}">
+                        <source src="${p.video}" type="video/mp4">
+                    </video>
+                </div>
+                ${photosHTML}
+            </div>`;
+        projectTrack.appendChild(article);
+    });
+}
 
 // ── LOADER ────────────────────────────────────────────────────────────────────
 const loader = document.querySelector(".loader");
@@ -364,13 +390,6 @@ function toggleVideo(index) {
     }
 }
 
-slides.forEach((slide, index) => {
-    slide.addEventListener("click", () => {
-        if (!isDesktop && index === currentIndex && introHasPlayed) toggleVideo(index);
-    });
-});
-
-// ── NAV TITLE ─────────────────────────────────────────────────────────────────
 function updateDesktopNavTitle(index) {
     if (!desktopNavTitle) return;
     desktopNavTitle.textContent = `[${slides[index]?.dataset?.title || ""}]`;
@@ -426,7 +445,6 @@ function runIntroAnimation() {
 
             const pressTl = gsap.timeline({
                 onComplete: () => {
-                    // ── Switch to smooth-scroll mode ──────────────────────────
                     gsap.set(slidesContainer, { scale: 1 });
 
                     slides.forEach(s => {
@@ -560,7 +578,6 @@ function stopAllProjectVideos() {
     document.querySelectorAll(".project-panel .project-video").forEach(v => v.pause());
 }
 
-
 // ── PROJECT INFO PANEL ────────────────────────────────────────────────────────
 let isInfoExpanded  = false;
 let isInfoAnimating = false;
@@ -625,24 +642,16 @@ function populateProjectMeta(index) {
     if (!data) return;
     projectInfoMetaTitle.textContent = data.title;
     projectInfoMetaDesc.textContent  = data.description;
-    projectInfoMetaTags.innerHTML    = data.tags.split("\n").map(t => `<div>${t}</div>`).join("");
+    projectInfoMetaTags.innerHTML    = data.tags.map(t => `<div>${t}</div>`).join("");
     projectInfoMetaDate.textContent  = data.date;
 }
-
-// ── SLIDE CLICK → PROJECT PAGE (desktop) ─────────────────────────────────────
-slides.forEach((slide, index) => {
-    slide.addEventListener("click", () => {
-        if (!isDesktop || !introHasPlayed || index !== currentIndex) return;
-        openProjectPage(index);
-    });
-});
 
 // ── ABOUT ─────────────────────────────────────────────────────────────────────
 if (aboutOverlay) gsap.set(aboutOverlay, { yPercent: 100, autoAlpha: 1 });
 
 function openAbout() {
     if (isAboutAnimating) return;
-    isAboutAnimating = true;
+    isAboutAnimating     = true;
     scrollEnabled        = false;
     projectScrollEnabled = false;
     gsap.to(aboutOverlay, {
@@ -664,23 +673,8 @@ function closeAbout() {
     });
 }
 
-// ── GALLERY GRIDS ─────────────────────────────────────────────────────────────
-(function initGalleryGrids() {
-    const indexImages = [
-        { src: "medias/BOTANIQUE.png",     title: "LIERAC",            projectIndex: 0 },
-        { src: "medias/PIECES.png",         title: "BA&SH",             projectIndex: 1 },
-        { src: "medias/I_KEPT_MY_NAME.png", title: "I KEPT MY NAME",    projectIndex: 2 },
-        { src: "medias/TELES.png",          title: "THE MAGIC IS",      projectIndex: 3 },
-        { src: "medias/OVERTHINK.png",      title: "STOP OVERTHINKING", projectIndex: 4 },
-        { src: "medias/VILLE.png",          title: "RED",               projectIndex: 5 },
-        { src: "medias/SOPARIS.png",        title: "SO/PARIS",          projectIndex: 6 },
-    ];
-
-    const caseImages = Array.from({ length: 15 }, (_, i) => ({
-        src: `medias/case/image${i + 1}.jpg`,
-        title: null
-    }));
-
+// ── GALLERY ───────────────────────────────────────────────────────────────────
+function initGalleryGrids(projects, caseImages) {
     const ratios = ["portrait", "landscape", "square"];
 
     function shuffle(arr) {
@@ -692,10 +686,10 @@ function closeAbout() {
         return a;
     }
 
-    function buildGrid(containerId, images) {
+    function buildGrid(containerId, items) {
         const container = document.getElementById(containerId);
         if (!container) return;
-        shuffle(images).forEach((item, i) => {
+        shuffle(items).forEach((item, i) => {
             const ratio = ratios[Math.floor(Math.random() * ratios.length)];
             const col   = (i % 5) + 1;
             const div   = document.createElement("div");
@@ -717,15 +711,15 @@ function closeAbout() {
         });
     }
 
-    buildGrid("index-grid", indexImages);
-    buildGrid("case-grid",  caseImages);
-})();
+    buildGrid("index-grid", projects.map((p, i) => ({ src: p.thumb, title: p.title, projectIndex: i })));
+    buildGrid("case-grid",  caseImages.map(src => ({ src, title: null })));
+}
 
 function openGallery(tab = "index") {
     if (isGalleryAnimating || isGalleryOpen) return;
     isGalleryAnimating = true;
     isGalleryOpen      = true;
-    switchGalleryTab(tab, false);
+    switchGalleryTab(tab);
     scrollEnabled = false;
     gsap.to(galleryOverlay, {
         yPercent: 0, autoAlpha: 1, duration: 0.9, ease: "power4.inOut",
@@ -758,9 +752,9 @@ function switchGalleryTab(tab) {
 
 if (galleryOverlay) gsap.set(galleryOverlay, { yPercent: 100, autoAlpha: 0 });
 
-if (galleryLogo)    galleryLogo.addEventListener("click",  e => { e.stopPropagation(); closeGallery(); });
-if (tabIndex)       tabIndex.addEventListener("click",     e => { e.stopPropagation(); switchGalleryTab("index"); });
-if (tabCase)        tabCase.addEventListener("click",      e => { e.stopPropagation(); switchGalleryTab("case"); });
+if (galleryLogo)    galleryLogo.addEventListener("click",   e => { e.stopPropagation(); closeGallery(); });
+if (tabIndex)       tabIndex.addEventListener("click",      e => { e.stopPropagation(); switchGalleryTab("index"); });
+if (tabCase)        tabCase.addEventListener("click",       e => { e.stopPropagation(); switchGalleryTab("case"); });
 if (galleryInfoBtn) galleryInfoBtn.addEventListener("click", e => { e.stopPropagation(); openAbout(); });
 
 if (galleryOverlay) {
@@ -771,45 +765,6 @@ if (galleryOverlay) {
         onLeft:         () => { if (!isDesktop) closeGallery(); },
         tolerance:      20,
         preventDefault: false
-    });
-}
-
-document.querySelectorAll(".case-item").forEach(item => {
-    item.addEventListener("click", e => {
-        e.stopPropagation();
-        const projectIndex = parseInt(item.dataset.project, 10);
-        if (isNaN(projectIndex)) return;
-        closeGallery();
-        gsap.delayedCall(0.4, () => openProjectPage(projectIndex, openProjectInfo));
-    });
-});
-
-// ── GLOBAL EVENT BINDINGS ─────────────────────────────────────────────────────
-if (logoFixed)      logoFixed.addEventListener("click",      e => { e.stopPropagation(); openAbout(); });
-if (aboutBack)      aboutBack.addEventListener("click",      e => { e.stopPropagation(); closeAbout(); });
-if (navInfo)        navInfo.addEventListener("click",        e => { e.stopPropagation(); openAbout(); });
-if (projectInfoBtn) projectInfoBtn.addEventListener("click", e => { e.stopPropagation(); openAbout(); });
-
-if (navIndexCase) {
-    navIndexCase.addEventListener("click", e => {
-        e.stopPropagation();
-        if (isProjectPageOpen) closeProjectPage();
-        else openGallery(currentGalleryTab);
-    });
-}
-
-if (projectLogoBack) {
-    projectLogoBack.addEventListener("click", e => {
-        e.stopPropagation();
-        if (isProjectPageOpen) closeProjectPage();
-    });
-}
-
-if (projectMoreBtn) {
-    projectMoreBtn.addEventListener("click", e => {
-        e.stopPropagation();
-        if (isInfoExpanded) closeProjectInfo();
-        else openProjectInfo();
     });
 }
 
@@ -841,17 +796,46 @@ if (projectMoreBtn) {
     footer.insertBefore(emailSpan, footer.firstElementChild);
 })();
 
+// ── STATIC EVENT BINDINGS ─────────────────────────────────────────────────────
+if (logoFixed)      logoFixed.addEventListener("click",      e => { e.stopPropagation(); openAbout(); });
+if (aboutBack)      aboutBack.addEventListener("click",      e => { e.stopPropagation(); closeAbout(); });
+if (navInfo)        navInfo.addEventListener("click",        e => { e.stopPropagation(); openAbout(); });
+if (projectInfoBtn) projectInfoBtn.addEventListener("click", e => { e.stopPropagation(); openAbout(); });
+
+if (navIndexCase) {
+    navIndexCase.addEventListener("click", e => {
+        e.stopPropagation();
+        if (isProjectPageOpen) closeProjectPage();
+        else openGallery(currentGalleryTab);
+    });
+}
+
+if (projectLogoBack) {
+    projectLogoBack.addEventListener("click", e => {
+        e.stopPropagation();
+        if (isProjectPageOpen) closeProjectPage();
+    });
+}
+
+if (projectMoreBtn) {
+    projectMoreBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        if (isInfoExpanded) closeProjectInfo();
+        else openProjectInfo();
+    });
+}
+
 // ── RESIZE ────────────────────────────────────────────────────────────────────
 window.addEventListener("resize", () => {
     const wasDesktop = isDesktop;
     isDesktop = window.innerWidth >= 768;
     if (wasDesktop !== isDesktop) { location.reload(); return; }
+
     if (isDesktop && isProjectPageOpen) {
         smoothScrollX = projectCurrentIndex * getPanelW();
         targetScrollX = smoothScrollX;
         applyHScroll(smoothScrollX);
     }
-
     if (scrollEnabled) {
         targetScrollY = getSnapDest(currentIndex);
         smoothScrollY = targetScrollY;
@@ -859,8 +843,47 @@ window.addEventListener("resize", () => {
     }
 });
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-window.addEventListener("load", () => {
+// ── INIT — fetch data.json then build everything ──────────────────────────────
+window.addEventListener("load", async () => {
+    let data = { projects: [], case: [] };
+    try {
+        const res = await fetch("data.json");
+        data = await res.json();
+    } catch (e) {
+        console.error("Could not load data.json:", e);
+    }
+
+    projectData = data.projects;
+
+    buildSlides(data.projects);
+    buildProjectPanels(data.projects);
+
+    // Update slides NodeList after DOM injection
+    slides = Array.from(document.querySelectorAll(".slide"));
+
+    // Gallery grids
+    initGalleryGrids(data.projects, data.case || []);
+
+    // Case item clicks (must run after grid is built)
+    document.querySelectorAll(".case-item").forEach(item => {
+        item.addEventListener("click", e => {
+            e.stopPropagation();
+            const idx = parseInt(item.dataset.project, 10);
+            if (isNaN(idx)) return;
+            closeGallery();
+            gsap.delayedCall(0.4, () => openProjectPage(idx, openProjectInfo));
+        });
+    });
+
+    // Slide clicks — mobile: toggle video / desktop: open project page
+    slides.forEach((slide, index) => {
+        slide.addEventListener("click", () => {
+            if (!introHasPlayed || index !== currentIndex) return;
+            if (!isDesktop) toggleVideo(index);
+            else            openProjectPage(index);
+        });
+    });
+
     if (isDesktop) initDesktopProjectPage();
     setTimeout(runIntroAnimation, 100);
 });

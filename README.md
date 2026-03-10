@@ -36,59 +36,118 @@ Ouvre [http://localhost:5173](http://localhost:5173) dans le navigateur.
 velar/
 ├── index.html              # Point d’entrée HTML
 ├── public/
+│   ├── data.json            # ← CONTENU : projets + images case (seul fichier à éditer)
 │   ├── main.js              # Logique : intro, slides, scroll, about
 │   ├── style.css            # Styles globaux et responsive
 │   ├── reset.css            # Reset CSS
-│   ├── logoWhite.png        # Logo (footer / accueil)
-│   ├── logoBlack.png        # Logo (page About)
-│   ├── assetAbout.jpg       # Image de la page About
-│   └── medias/              # Vidéos et posters des slides
+│   ├── logoWhite.png        # Logo blanc (accueil / nav)
+│   ├── logoBlack.png        # Logo noir (page projet / about)
+│   ├── assetAbout.png       # Image de la page About
+│   └── medias/              # Vidéos, posters et images des projets
+│       └── case/            # Images de l'onglet CASE
 ├── package.json
 └── README.md
 ```
 
-## Fonctionnalités
+## Gestion du contenu
 
-### Accueil (slider)
+Tout le contenu (projets et images case) est centralisé dans un seul fichier :
 
-- **Intro** : animation type “roulette” avec flou de mouvement, puis zoom arrière pour révéler la première slide.
-- **Navigation** : scroll (molette ou touch) pour changer de projet (slide précédente / suivante, boucle).
-- **Vidéos** : une vidéo par slide, en boucle, avec poster. Clic sur la slide active pour lancer la lecture (play/pause).
-- **Logo fixe** : en bas, centré ; clic pour ouvrir la page About.
+```
+public/data.json
+```
 
-### Page About
+Il n'y a **aucune modification à faire** dans `index.html` ou `main.js`.
 
-- Ouverture : clic sur le logo en bas → overlay qui monte depuis le bas.
-- Contenu : texte de présentation, liste de services, image, liens contact (email, Instagram).
-- Fermeture : bouton **Back** en haut à gauche → overlay redescend, retour au slider.
+---
 
-### Comportement général
+### Structure de `data.json`
 
-- Pendant l’intro et les transitions, le scroll est désactivé.
-- Les clics sur le logo et le bouton Back sont exclus du gestionnaire de scroll (Observer) pour éviter les conflits.
+```json
+{
+  "projects": [ ... ],
+  "case": [ ... ]
+}
+```
 
-## Personnalisation
+---
 
-### Ajouter une slide
+### Ajouter un projet
 
-Dans `index.html`, dupliquer un bloc `<section class="slide">` et adapter :
+1. Déposer les fichiers dans `public/medias/` :
+   - la vidéo : `monprojet.mp4`
+   - le poster (image de fallback) : `MONPROJET.png`
+   - les photos de la page projet : `MONPROJET_1.png`, `MONPROJET_2.png`, etc.
 
-- `.slide-content` : titre du projet (`.title`).
-- `.media-container` : une balise `<video>` avec `poster`, `muted`, `loop`, `playsinline` et une source MP4 dans `public/medias/`.
+2. Ajouter un objet dans le tableau `"projects"` de `data.json` :
 
-### Modifier les médias
+```json
+{
+  "title": "NOM DU PROJET",
+  "description": "Description courte du projet.",
+  "tags": ["CGI", "Art Direction", "Post Production"],
+  "date": "2024",
+  "video": "medias/monprojet.mp4",
+  "thumb": "medias/MONPROJET.png",
+  "photos": [
+    "medias/MONPROJET_1.png",
+    "medias/MONPROJET_2.png"
+  ]
+}
+```
 
-- **Vidéos** : ajouter les fichiers dans `public/medias/` et mettre à jour les `src` et `poster` dans `index.html`.
+> L'ordre dans le tableau détermine l'ordre d'affichage dans le slider.
+
+**Champs disponibles pour les `tags` :**
+`"Narrative Production"`, `"CGI"`, `"AI"`, `"Art Direction"`, `"Social-First Content"`, `"Motion Design"`, `"Post Production"`
+
+---
+
+### Modifier un projet
+
+Ouvrir `data.json`, trouver l'objet correspondant au projet et modifier les champs souhaités. Exemple — changer l'année :
+
+```json
+"date": "2025"
+```
+
+---
+
+### Supprimer un projet
+
+Supprimer l'objet entier `{ ... }` correspondant dans le tableau `"projects"`.
+Ne pas oublier de retirer la virgule de l'objet précédent si c'était le dernier élément.
+
+---
+
+### Ajouter / supprimer des images dans INDEX/CASE
+
+Le tableau `"case"` liste les chemins des images affichées dans l'onglet **CASE** de la galerie.
+
+```json
+"case": [
+  "medias/case/image1.jpg",
+  "medias/case/image2.jpg"
+]
+```
+
+- **Ajouter** : déposer l'image dans `public/medias/case/` et ajouter son chemin au tableau.
+- **Supprimer** : retirer la ligne correspondante du tableau.
+
+---
+
+### Modifier les médias statiques
+
 - **Logos** : remplacer `public/logoWhite.png` et `public/logoBlack.png`.
-- **Image About** : remplacer `public/assetAbout.jpg` (référencée dans la section `.about-visual`).
+- **Image About** : remplacer `public/assetAbout.png`.
 
 ### Modifier le texte About
 
-Éditer dans `index.html` les blocs :
+Éditer directement dans `index.html` les blocs :
 
-- `.about-description` (paragraphe de présentation)
-- `.service-list` (liste des services)
-- `.about-footer` (email, lien Instagram)
+- `.about-description` — paragraphe de présentation et adresse
+- `.service-list` — liste des services
+- `.about-footer` — lien Instagram (l'email est géré automatiquement dans `main.js`)
 
 ## Build de production
 
