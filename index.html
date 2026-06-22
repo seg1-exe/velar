@@ -19,7 +19,8 @@
     <meta property="og:locale"      content="en_US">
     <meta property="og:title"       content="VELAR — Creative Studio Paris | CGI, Art Direction, Motion Design">
     <meta property="og:description" content="A creative studio at the intersection of luxury, modernity, and craftsmanship. CGI, AI, art direction, narrative production.">
-    <meta property="og:image"       content="https://velar-studio.com/medias/VELAR.png">
+    <meta property="og:image"       content="https://velar-studio.com/medias/velar-og.jpg">
+    <meta property="og:image:type"  content="image/jpeg">
     <meta property="og:image:alt"   content="VELAR Studio — Paris Creative Studio">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -29,7 +30,7 @@
     <meta name="twitter:site"        content="@velar.___">
     <meta name="twitter:title"       content="VELAR — Creative Studio Paris">
     <meta name="twitter:description" content="A creative studio at the intersection of luxury, modernity, and craftsmanship. CGI, AI, art direction, narrative production.">
-    <meta name="twitter:image"       content="https://velar-studio.com/medias/VELAR.png">
+    <meta name="twitter:image"       content="https://velar-studio.com/medias/velar-og.jpg">
 
     <!-- ── SEO : JSON-LD Organisation ───────────────────────────────────── -->
     <script type="application/ld+json">
@@ -39,7 +40,7 @@
       "name": "VELAR Studio",
       "url": "https://velar-studio.com",
       "logo": "https://velar-studio.com/logoBlack.png",
-      "image": "https://velar-studio.com/medias/VELAR.png",
+      "image": "https://velar-studio.com/medias/velar-og.jpg",
       "description": "A Paris-based creative studio at the intersection of luxury, modernity, and craftsmanship. Specialising in CGI, AI, art direction, motion design and narrative production.",
       "email": "hello@velar-studio.com",
       "address": {
@@ -66,7 +67,6 @@
     </script>
 
     <!-- ── Performance : preconnect CDN ─────────────────────────────────── -->
-    <link rel="preconnect" href="https://kit.fontawesome.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
     <!-- ── Favicon ───────────────────────────────────────────────────────── -->
@@ -80,7 +80,6 @@
     <meta name="cf-2fa-verify" content="false">
     <!-- data-cfasync="false" tells Cloudflare not to obfuscate anything on this page -->
     <script data-cfasync="false">/* velar */</script>
-    <script src="https://kit.fontawesome.com/847debfb6c.js" crossorigin="anonymous"></script>
   </head>
   <body>
     <div class="loader"></div>
@@ -172,7 +171,7 @@
         <!-- Top bar: logo left, BACK right -->
         <div class="about-topbar">
           <img class="about-logo" src="/logoBlack.png" alt="Velar logo" draggable="false" onclick="closeAbout()">
-          <button class="about-back"><i class="fa-solid fa-arrow-up"></i> BACK</button>
+          <button class="about-back" aria-label="Back"><span aria-hidden="true">&uarr;</span> BACK</button>
         </div>
 
         <!-- Description + address -->
@@ -205,14 +204,14 @@
           </div>
 
           <div class="about-visual">
-            <img src="/assetAbout.png" alt="Visual">
+            <img src="/assetAbout.webp" alt="VELAR studio creative visual" loading="lazy" decoding="async">
           </div>
         </div>
 
         <!-- Footer: email + instagram -->
         <footer class="about-footer">
           <span id="velar-contact-email" class="contact-link"></span>
-          <a href="https://instagram.com/velar.___" target="_blank" class="contact-link">
+          <a href="https://instagram.com/velar.___" target="_blank" rel="noopener noreferrer" class="contact-link">
             @velar.______
           </a>
         </footer>
@@ -220,8 +219,8 @@
       </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js" integrity="sha512-7xTD1meeGGoAzwZKA0Z8YelV3qAvRltuwACWXpnxtneF7VAMztOTAi3t4laVSaE4Znq4LMPeGUIYWEvKEk5r3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="main.js"></script>
   </body>
 </html>

@@ -25,7 +25,6 @@ const projectMoreBtn       = document.getElementById("project-more-btn");
 const projectInfoBtn       = document.getElementById("project-info-btn");
 const projectTrack         = document.getElementById("project-track");
 const projectInfoPanel     = document.getElementById("project-info-panel");
-const projectInfoMediaRow  = document.getElementById("project-info-media-row");
 const projectInfoMetaTitle = document.getElementById("project-info-meta-title");
 const projectInfoMetaDesc  = document.getElementById("project-info-meta-desc");
 const projectInfoMetaTags  = document.getElementById("project-info-meta-tags");
@@ -328,6 +327,12 @@ function onProjectTouchEnd(e) {
     scheduleMagneticSnapH();
 }
 
+// ── HTML escape — data.json is author-controlled, escape defensively ──────────
+function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
 // ── DOM BUILDERS ──────────────────────────────────────────────────────────────
 function buildSlides(projects) {
     projects.forEach((p, i) => {
@@ -337,11 +342,11 @@ function buildSlides(projects) {
         section.dataset.title = p.title;
         section.innerHTML = `
             <div class="slide-content">
-                <h2 class="title">${p.title}</h2>
+                <h2 class="title">${esc(p.title)}</h2>
             </div>
             <div class="media-container">
-                <video muted loop playsinline poster="${p.thumb}">
-                    <source src="${p.video}" type="video/mp4">
+                <video muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.thumb)}">
+                    <source src="${esc(p.video)}" type="video/mp4">
                 </video>
             </div>`;
         slidesContainer.appendChild(section);
@@ -355,13 +360,13 @@ function buildProjectPanels(projects) {
         article.dataset.project = i;
         const photosHTML = (p.photos || []).map(src => `
                 <div class="project-cell project-cell--photo">
-                    <img src="${src}" alt="${p.title}" draggable="false">
+                    <img src="${esc(src)}" alt="${esc(p.title)} — project visual" draggable="false" loading="lazy" decoding="async">
                 </div>`).join("");
         article.innerHTML = `
             <div class="project-media-grid">
                 <div class="project-cell project-cell--video">
-                    <video class="project-video" muted loop playsinline poster="${p.thumb}">
-                        <source src="${p.video}" type="video/mp4">
+                    <video class="project-video" muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.thumb)}">
+                        <source src="${esc(p.video)}" type="video/mp4">
                     </video>
                 </div>
                 ${photosHTML}
@@ -542,10 +547,6 @@ function closeProjectPage() {
         isInfoExpanded  = false;
         isInfoAnimating = false;
         if (projectMoreBtn) projectMoreBtn.textContent = "MORE";
-        if (projectInfoMediaRow) {
-            gsap.set(projectInfoMediaRow, { height: 0 });
-            projectInfoMediaRow.innerHTML = "";
-        }
     }
 
     gsap.to(projectPage, {
@@ -642,7 +643,7 @@ function populateProjectMeta(index) {
     if (!data) return;
     projectInfoMetaTitle.textContent = data.title;
     projectInfoMetaDesc.textContent  = data.description;
-    projectInfoMetaTags.innerHTML    = data.tags.map(t => `<div>${t}</div>`).join("");
+    projectInfoMetaTags.innerHTML    = data.tags.map(t => `<div>${esc(t)}</div>`).join("");
     projectInfoMetaDate.textContent  = data.date;
 }
 
@@ -695,11 +696,18 @@ function initGalleryGrids(projects, caseImages) {
             const div   = document.createElement("div");
             div.className = `case-item case-item--${ratio}`;
             div.style.gridColumn = String(col);
-            if (item.projectIndex !== undefined) div.dataset.project = item.projectIndex;
+            if (item.projectIndex !== undefined) {
+                div.dataset.project = item.projectIndex;
+                div.setAttribute("role", "button");
+                div.tabIndex = 0;
+                div.setAttribute("aria-label", `Open project ${item.title || ""}`.trim());
+            }
             const img = document.createElement("img");
             img.src = item.src;
             img.alt = item.title || "";
             img.draggable = false;
+            img.loading = "lazy";
+            img.decoding = "async";
             div.appendChild(img);
             if (item.title) {
                 const span = document.createElement("span");
@@ -782,18 +790,12 @@ if (galleryOverlay) {
         if (!child.href || !child.href.includes("instagram")) footer.removeChild(child);
     });
 
-    const emailSpan = document.createElement("span");
-    emailSpan.className    = "contact-link";
-    emailSpan.style.cursor = "pointer";
-    emailSpan.textContent  = full + " \u2197";
+    const emailLink = document.createElement("a");
+    emailLink.className   = "contact-link";
+    emailLink.href        = "mai" + "lto:" + full;
+    emailLink.textContent = full + " \u2197";
 
-    emailSpan.addEventListener("click", e => {
-        e.preventDefault();
-        e.stopPropagation();
-        window.location.href = "mai" + "lto:" + full;
-    });
-
-    footer.insertBefore(emailSpan, footer.firstElementChild);
+    footer.insertBefore(emailLink, footer.firstElementChild);
 })();
 
 // ── STATIC EVENT BINDINGS ─────────────────────────────────────────────────────
@@ -866,12 +868,19 @@ window.addEventListener("load", async () => {
 
     // Case item clicks (must run after grid is built)
     document.querySelectorAll(".case-item").forEach(item => {
-        item.addEventListener("click", e => {
-            e.stopPropagation();
+        const openItem = () => {
             const idx = parseInt(item.dataset.project, 10);
             if (isNaN(idx)) return;
             closeGallery();
             gsap.delayedCall(0.4, () => openProjectPage(idx, openProjectInfo));
+        };
+        item.addEventListener("click", e => { e.stopPropagation(); openItem(); });
+        item.addEventListener("keydown", e => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.stopPropagation();
+                openItem();
+            }
         });
     });
 

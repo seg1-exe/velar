@@ -54,6 +54,7 @@
 .slides-container {
     width: 100vw;
     height: 100vh;
+    height: 100dvh; /* stable on mobile despite URL-bar show/hide */
     position: relative;
     z-index: 1;
     pointer-events: none;
@@ -160,6 +161,7 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     height: 100vh;
+    height: 100dvh;
     /* visibility:hidden prevents flash on load.
        NO transform here — GSAP owns yPercent exclusively.
        Mixing CSS transform + GSAP yPercent causes conflicts. */
@@ -447,6 +449,12 @@
     }
 
     .desktop-nav__project-title {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
+        text-align: center;
         font-size: 13px;
         font-weight: 400;
         text-transform: uppercase;
