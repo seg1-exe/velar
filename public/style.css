@@ -246,12 +246,16 @@
     padding-left: 0;
 }
 
-.about-visual img {
-    grid-column: 2;
-    width: 300px;
-    height: 300px;
-    object-fit: cover;
-    justify-self: start;
+.about-visual .ascii-video {
+    width: 220px;
+    line-height: 0;
+    font-size: 0;
+}
+
+.ascii-video .ascii-layer {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
 .about-footer {
@@ -591,16 +595,21 @@
         box-sizing: border-box;
     }
 
-    /* ── Media grid ── */
+    /* ── Media grid — one wide video (60%) + one photo (40%) ── */
     .project-media-grid {
         display: grid;
-        grid-template-columns: 33% 1fr 25%;
+        grid-template-columns: 60% 40%;
         grid-template-rows: 1fr;
         column-gap: 6px;
         margin: 0 6px;
         width: 100%;
         height: 100%;
         align-items: stretch;
+    }
+
+    /* ── Multi-video grid (ba&sh) — 3 equal cells that rotate ── */
+    .project-media-grid--multi {
+        grid-template-columns: repeat(3, 1fr);
     }
 
     .project-cell {
@@ -619,22 +628,43 @@
         display: block;
     }
 
-    /* ── Bottom white info bar — expands on MORE to reveal meta ── */
+    /* ── Rotating video cell: poster image shown while paused, video shown
+          while active. ── */
+    .project-media-grid--multi .project-cell--video .project-poster,
+    .project-media-grid--multi .project-cell--video .project-video {
+        position: absolute;
+        inset: 0;
+    }
+
+    .project-media-grid--multi .project-cell--video .project-video {
+        display: none;
+    }
+
+    .project-media-grid--multi .project-cell--video.is-active .project-video {
+        display: block;
+    }
+
+    .project-media-grid--multi .project-cell--video.is-active .project-poster {
+        display: none;
+    }
+
+    /* ── Bottom white info bar — fixed height so the media area above never
+          shifts when the description length changes between projects ── */
     .project-info-panel {
-        flex: 0 0 auto;
+        flex: 0 0 90px;
+        height: 90px;
         background: #fff;
         color: #000;
         z-index: 20;
         overflow: hidden;
-        /* height is controlled by GSAP: collapses to 0 when empty, expands to auto when populated */
     }
 
-    /* Meta bar — revealed when MORE is clicked */
+    /* Meta bar — always visible: title | description | credits | date */
     .project-info-meta {
         display: grid;
-        grid-template-columns: 1fr 2fr 1fr 1fr;
+        grid-template-columns: 1fr 3fr 2fr 1fr;
         gap: 24px;
-        padding: 28px 36px 32px;
+        padding: 20px 36px;
         box-sizing: border-box;
         background: #fff;
         align-items: start;
@@ -658,16 +688,15 @@
         color: #000;
     }
 
-    .project-info-meta__tags {
+    .project-info-meta__credits {
         font-size: 10px;
         font-weight: 400;
         text-transform: uppercase;
-        line-height: 2;
+        line-height: 1.6;
         letter-spacing: 0.04em;
         color: #000;
+        white-space: pre-line;
     }
-
-    .project-info-meta__tags div { line-height: 2; }
 
     .project-info-meta__date {
         font-size: 10px;
@@ -867,8 +896,9 @@
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        min-height: 100vh;
         box-sizing: border-box;
+        position: relative;
+        min-height: 100vh;     /* the whole INFO fits in one screen */
     }
 
     /* Top bar: logo left, BACK right */
@@ -876,7 +906,7 @@
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        margin-bottom: 64px;
+        margin-bottom: 40px;
     }
 
     .about-logo {
@@ -899,7 +929,7 @@
 
     /* Description + address block */
     .about-description {
-        margin-bottom: 60px;
+        margin-bottom: 36px;
         max-width: 680px;
     }
 
@@ -928,7 +958,7 @@
         grid-template-columns: 1fr 1fr;
         gap: 48px;
         align-items: start;
-        margin-bottom: 80px;
+        margin-bottom: 40px;
     }
 
     .about-services {
@@ -961,22 +991,35 @@
         line-height: 1.4;
     }
 
-    /* 3 images side by side */
+    /* Creative visual — lifted out of the flow, filling the right half of the
+       page, vertically centred and flush right (see maquette). */
     .about-visual {
-        gap: 8px;
+        position: absolute;
+        top: 100px;            /* clears the BACK button, sits high on the page */
+        bottom: 60px;          /* fill the available height */
+        right: 60px;           /* matches container padding-right → flush with content edge */
+        width: 50%;
         margin: 0;
         padding: 0;
+        display: flex;
+        align-items: stretch;      /* fill the available height */
+        justify-content: flex-end; /* flush right */
+        z-index: -1;               /* sits behind the page content (e.g. the email) */
     }
 
-    .about-visual img {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-        grid-column: auto;
-        justify-self: auto;
+    .about-visual .ascii-video {
+        width: auto;
+        height: 100%;
+        max-width: 100%;
     }
 
-    /* Footer: big email + instagram */
+    .about-visual .ascii-video .ascii-layer {
+        width: auto;
+        height: 100%;
+        max-width: 100%;
+    }
+
+    /* Footer: big email + instagram — pinned to the bottom of the 100vh screen */
     .about-footer {
         margin-top: auto;
         gap: 0;
@@ -984,7 +1027,7 @@
     }
 
     .contact-link {
-        font-size: 72px;
+        font-size: clamp(40px, 7vh, 72px);   /* shrinks on short screens so the footer stays in 100vh */
         line-height: 0.95;
         display: block;
     }
@@ -1048,11 +1091,9 @@
         margin-bottom: 60px;
     }
 
-    .about-visual img {
-        grid-column: 1;
-        justify-self: center;
+    .about-visual .ascii-video {
         width: 100%;
-        height: auto;
+        margin-left: 0;
     }
 
     .contact-link {

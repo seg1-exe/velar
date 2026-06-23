@@ -114,7 +114,6 @@
       <header class="project-nav">
         <img class="project-nav__logo" src="/logoBlack.png" alt="Velar logo" draggable="false" id="project-logo-back">
         <nav style="display:flex;gap:48px;align-items:center;">
-          <button class="project-nav__btn" id="project-more-btn">MORE</button>
           <button class="project-nav__btn" id="project-info-btn">INFO</button>
         </nav>
       </header>
@@ -124,12 +123,12 @@
         <div class="project-track" id="project-track"></div>
       </div><!-- /.project-track-wrapper -->
 
-      <!-- Bottom info panel: expands on MORE to show project meta -->
+      <!-- Bottom info panel: project meta, always visible -->
       <div class="project-info-panel" id="project-info-panel">
         <div class="project-info-meta" id="project-info-meta">
           <div class="project-info-meta__title" id="project-info-meta-title"></div>
           <div class="project-info-meta__description" id="project-info-meta-desc"></div>
-          <div class="project-info-meta__tags" id="project-info-meta-tags"></div>
+          <div class="project-info-meta__credits" id="project-info-meta-credits"></div>
           <div class="project-info-meta__date" id="project-info-meta-date"></div>
         </div>
       </div>
@@ -174,38 +173,37 @@
           <button class="about-back" aria-label="Back"><span aria-hidden="true">&uarr;</span> BACK</button>
         </div>
 
-        <!-- Description + address -->
+        <!-- Description + services -->
         <div class="about-description">
           <p>
             We are a creative studio at the intersection of luxury, modernity, and craftsmanship.
             Our approach is rooted in creation, experimentation, and the art of "crafting the unseen."
             As a true accelerator of images, Velar designs visual emotional experiences that tell, resonate, and transform.
           </p>
-          <address class="about-address">
-            Paris based (FR)<br>
-            66 Avenue des Champs-Élysées,<br>
-            75008 Paris, France
-          </address>
-        </div>
-
-        <!-- Services row + visual images side by side -->
-        <div class="about-middle">
           <div class="about-services">
             <div class="service-label">Services</div>
             <ul class="service-list">
               <li>Narrative Production</li>
               <li>CGI</li>
-              <li>AI</li>
               <li>Art Direction</li>
-              <li>Social-First Content</li>
               <li>Motion Design</li>
               <li>Post Production</li>
             </ul>
           </div>
+        </div>
 
-          <div class="about-visual">
-            <img src="/assetAbout.webp" alt="VELAR studio creative visual" loading="lazy" decoding="async">
-          </div>
+        <!-- Creative visual (ASCII video) — pulled up, right-aligned -->
+        <div class="about-visual">
+          <div class="ascii-video" id="about-ascii-video" aria-label="VELAR studio creative visual"></div>
+        </div>
+
+        <!-- Address row -->
+        <div class="about-middle">
+          <address class="about-address">
+            Paris based (FR)<br>
+            66 Avenue des Champs-Élysées,<br>
+            75008 Paris, France
+          </address>
         </div>
 
         <!-- Footer: email + instagram -->
@@ -222,5 +220,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js" integrity="sha512-7xTD1meeGGoAzwZKA0Z8YelV3qAvRltuwACWXpnxtneF7VAMztOTAi3t4laVSaE4Znq4LMPeGUIYWEvKEk5r3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="main.js"></script>
+    <script src="ascii-video.js"></script>
+    <script>
+      initAsciiVideo(document.getElementById("about-ascii-video"), "/medias/flowersWhite.webm", { lightThreshold: 240, colored: false });
+    </script>
   </body>
 </html>

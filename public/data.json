@@ -2,66 +2,31 @@
   "projects": [
     {
       "title": "MONIKA",
-      "description": "A botanical journey into the heart of LIERAC's serum. We crafted a visual narrative around transparency, purity, and the living intelligence of plants.",
-      "tags": ["CGI", "AI", "Art Direction"],
-      "date": "2024",
+      "description": "Monika navigates a strange and oversized city, accompanied by a keyboard she seems unable to part with. As her journey unfolds, she is faced with a decision that may redefine her connection to the past.",
+      "credits": "DIRECTED, WRITTEN AND EDITED BY Carmen Moreno, Carlos Didier, Sara Echeverri STARRING Monika JIA PRODUCED BY Velar",
+      "date": "2026",
       "video": "medias/monika.mp4",
       "thumb": "medias/FRAME1.webp",
-      "photos": ["medias/FRAME2.webp", "medias/FRAME3.webp"]
+      "photo": "medias/FRAME2.webp"
     },
     {
-      "title": "BA&SH",
-      "description": "Pieces that move. A social-first campaign celebrating freedom of expression through garments that live and breathe on screen.",
-      "tags": ["Narrative Production", "Social-First Content", "Post Production"],
+      "title": "MAGIC IS BA&SH",
+      "description": "Creative direction of the Ba&sh Noël 2025 campaign, where the brand’s signature red aesthetic spreads across Paris through gift machines, television screens and urban installations.",
+      "credits": "",
       "date": "2024",
       "video": "medias/pieces.mp4",
       "thumb": "medias/PIECES.webp",
-      "photos": ["medias/PIECES.webp", "medias/PIECES.webp"]
+      "videos": ["medias/bash1.mp4", "medias/bash2.mp4", "medias/bash3.mp4"],
+      "posters": ["medias/PIECES.webp", "medias/PIECES.webp", "medias/PIECES.webp"]
     },
     {
       "title": "I KEPT MY NAME",
-      "description": "Identity as resistance. A film exploring what it means to hold onto yourself when the world tries to rename you.",
-      "tags": ["Narrative Production", "Art Direction", "Post Production"],
-      "date": "2023",
+      "description": "A visual essay reflecting on transformation and permanence. As memories, matter, and experiences are replaced, what survives the passage of time?",
+      "credits": "DIRECTED, WRITTEN AND EDITED BY Carmen Moreno & Carlos Didier STARRING Marina Obba",
+      "date": "2026",
       "video": "medias/ikeptmyname.mp4",
       "thumb": "medias/I_KEPT_MY_NAME.webp",
-      "photos": ["medias/I_KEPT_MY_NAME.webp", "medias/I_KEPT_MY_NAME.webp"]
-    },
-    {
-      "title": "THE MAGIC IS",
-      "description": "The invisible made tangible. A campaign built around the sensation of transformation—before and after the moment that changes everything.",
-      "tags": ["CGI", "Motion Design", "Art Direction"],
-      "date": "2023",
-      "video": "medias/teles.mp4",
-      "thumb": "medias/TELES.webp",
-      "photos": ["medias/TELES.webp", "medias/TELES.webp"]
-    },
-    {
-      "title": "STOP OVERTHINKING",
-      "description": "A manifesto in motion. Structured chaos, interrupted thoughts, and the beauty of letting go—translated into a visual language for a new generation.",
-      "tags": ["Social-First Content", "Motion Design", "AI"],
-      "date": "2024",
-      "video": "medias/overthink.mp4",
-      "thumb": "medias/OVERTHINK.webp",
-      "photos": ["medias/OVERTHINK.webp", "medias/OVERTHINK.webp"]
-    },
-    {
-      "title": "RED",
-      "description": "Paris at night, reimagined. A city that pulses with desire, tension, and color—captured in a campaign that refuses to be quiet.",
-      "tags": ["Narrative Production", "Post Production", "Art Direction"],
-      "date": "2024",
-      "video": "medias/villeparis.mp4",
-      "thumb": "medias/VILLE.webp",
-      "photos": ["medias/VILLE.webp", "medias/VILLE.webp"]
-    },
-    {
-      "title": "SO/PARIS",
-      "description": "Luxury hospitality seen through a new lens. An experience campaign that blurs the line between a hotel stay and a state of mind.",
-      "tags": ["CGI", "Art Direction", "Post Production"],
-      "date": "2023",
-      "video": "medias/soparis.mp4",
-      "thumb": "medias/SOPARIS.webp",
-      "photos": ["medias/SOPARIS.webp", "medias/SOPARIS.webp"]
+      "photo": "medias/I_KEPT_MY_NAME.webp"
     }
   ],
   "case": [

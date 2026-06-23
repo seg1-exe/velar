@@ -21,13 +21,12 @@ const galleryInfoBtn       = document.getElementById("gallery-info-btn");
 
 const projectPage          = document.getElementById("project-page");
 const projectLogoBack      = document.getElementById("project-logo-back");
-const projectMoreBtn       = document.getElementById("project-more-btn");
 const projectInfoBtn       = document.getElementById("project-info-btn");
 const projectTrack         = document.getElementById("project-track");
 const projectInfoPanel     = document.getElementById("project-info-panel");
 const projectInfoMetaTitle = document.getElementById("project-info-meta-title");
 const projectInfoMetaDesc  = document.getElementById("project-info-meta-desc");
-const projectInfoMetaTags  = document.getElementById("project-info-meta-tags");
+const projectInfoMetaCredits = document.getElementById("project-info-meta-credits");
 const projectInfoMetaDate  = document.getElementById("project-info-meta-date");
 
 // ── APP STATE ─────────────────────────────────────────────────────────────────
@@ -35,6 +34,7 @@ let slides      = [];   // populated after buildSlides()
 let projectData = [];   // populated from data.json
 
 let currentIndex     = 0;
+let liveTitleIndex   = -1;   // nearest-slide title currently shown (live during scroll)
 let introHasPlayed   = false;
 let isDesktop        = window.innerWidth >= 768;
 
@@ -69,6 +69,33 @@ function applyScroll(y) {
         if (pos > total / 2) pos -= total;
         gsap.set(s, { y: pos, visibility: Math.abs(pos) < h ? "visible" : "hidden" });
     });
+    updateLiveTitle(y);
+}
+
+// Update the project name to the nearest slide live during scroll, so names
+// change at the same speed as a fast scroll instead of waiting for the snap.
+function updateLiveTitle(y) {
+    const h = getSlideH();
+    const N = slides.length;
+    if (!N) return;
+    const norm = ((y / h) % N + N) % N;
+    const idx  = Math.round(norm) % N;
+    if (idx === liveTitleIndex) return;
+    liveTitleIndex = idx;
+
+    if (isDesktop) {
+        updateDesktopNavTitle(idx);
+    } else {
+        slides.forEach((s, i) => {
+            const title = s.querySelector(".title");
+            if (!title) return;
+            if (i === idx) {
+                gsap.to(title, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out", overwrite: true });
+            } else {
+                gsap.set(title, { opacity: 0, y: -15 });
+            }
+        });
+    }
 }
 
 function getSnapDest(index) {
@@ -118,21 +145,7 @@ function snapToSlide(index) {
             currentIndex  = index;
             updateDesktopNavTitle(index);
             isSnapping = false;
-
-            if (!isDesktop) {
-                slides.forEach((s, i) => {
-                    const title = s.querySelector(".title");
-                    if (!title) return;
-                    if (i === index) {
-                        gsap.fromTo(title,
-                            { opacity: 0, y: -15 },
-                            { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
-                        );
-                    } else {
-                        gsap.set(title, { opacity: 0, y: -15 });
-                    }
-                });
-            }
+            // Title visibility is handled live during scroll by updateLiveTitle().
         }
     });
 }
@@ -222,6 +235,7 @@ function applyHScroll(x) {
         if (pos > total / 2) pos -= total;
         gsap.set(p, { x: pos });
     });
+    updateLiveProjectMeta(x);
 }
 
 function getSnapDestH(index) {
@@ -254,12 +268,6 @@ function snapToProjectSlide(index) {
 
     stopProjectVideo(projectCurrentIndex);
 
-    if (isInfoExpanded) {
-        gsap.to([projectInfoMetaTitle, projectInfoMetaDesc, projectInfoMetaTags, projectInfoMetaDate], {
-            opacity: 0, duration: 0.2, ease: "power2.in"
-        });
-    }
-
     const dest  = getSnapDestH(index);
     const proxy = { val: smoothScrollX };
 
@@ -276,14 +284,7 @@ function snapToProjectSlide(index) {
             smoothScrollX       = dest;
             targetScrollX       = dest;
             projectCurrentIndex = index;
-            if (isInfoExpanded) {
-                populateProjectMeta(index);
-                gsap.fromTo(
-                    [projectInfoMetaTitle, projectInfoMetaDesc, projectInfoMetaTags, projectInfoMetaDate],
-                    { opacity: 0 },
-                    { opacity: 1, duration: 0.35, ease: "power2.out" }
-                );
-            }
+            // MORE panel text is updated live during scroll by updateLiveProjectMeta().
             playProjectVideo(index);
             isSnappingH = false;
         }
@@ -358,21 +359,84 @@ function buildProjectPanels(projects) {
         const article = document.createElement("article");
         article.className       = "project-panel";
         article.dataset.project = i;
-        const photosHTML = (p.photos || []).map(src => `
+
+        if (Array.isArray(p.videos) && p.videos.length) {
+            // ── ba&sh-style panel: N videos that rotate, one playing at a time,
+            //    the others showing their poster image. ──
+            const cellsHTML = p.videos.map((src, k) => {
+                const poster = (p.posters && p.posters[k]) || p.thumb;
+                return `
+                <div class="project-cell project-cell--video${k === 0 ? " is-active" : ""}">
+                    <img class="project-poster" src="${esc(poster)}" alt="${esc(p.title)} — project visual" draggable="false" loading="lazy" decoding="async">
+                    <video class="project-video" muted playsinline preload="none" aria-hidden="true" poster="${esc(poster)}">
+                        <source src="${esc(src)}" type="video/mp4">
+                    </video>
+                </div>`;
+            }).join("");
+            article.innerHTML = `
+            <div class="project-media-grid project-media-grid--multi">
+                ${cellsHTML}
+            </div>`;
+        } else {
+            // ── Standard panel: one wide video (70%) + one photo (30%). ──
+            const photo = p.photo || (p.photos && p.photos[0]);
+            const photoHTML = photo ? `
                 <div class="project-cell project-cell--photo">
-                    <img src="${esc(src)}" alt="${esc(p.title)} — project visual" draggable="false" loading="lazy" decoding="async">
-                </div>`).join("");
-        article.innerHTML = `
+                    <img src="${esc(photo)}" alt="${esc(p.title)} — project visual" draggable="false" loading="lazy" decoding="async">
+                </div>` : "";
+            article.innerHTML = `
             <div class="project-media-grid">
                 <div class="project-cell project-cell--video">
                     <video class="project-video" muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.thumb)}">
                         <source src="${esc(p.video)}" type="video/mp4">
                     </video>
                 </div>
-                ${photosHTML}
+                ${photoHTML}
             </div>`;
+        }
         projectTrack.appendChild(article);
     });
+}
+
+// Wire up the rotation controller for a multi-video (ba&sh) panel. Stores
+// a { play, stop } controller on panel._rotation. Only one video plays at a
+// time; when it ends the next cell starts and the previous reverts to its
+// poster image.
+function setupPanelRotation(panel) {
+    const cells = Array.from(panel.querySelectorAll(".project-cell--video"));
+    if (cells.length < 2) return;
+    const videos = cells.map(c => c.querySelector("video"));
+    let running = false;
+
+    function show(idx) {
+        cells.forEach((c, k) => {
+            const v = videos[k];
+            if (k === idx) {
+                c.classList.add("is-active");
+                try { v.currentTime = 0; } catch (e) {}
+                const pr = v.play(); if (pr) pr.catch(() => {});
+            } else {
+                c.classList.remove("is-active");
+                v.pause();
+            }
+        });
+    }
+
+    videos.forEach((v, k) => {
+        v.addEventListener("ended", () => {
+            if (!running) return;
+            show((k + 1) % videos.length);
+        });
+    });
+
+    panel._rotation = {
+        play() { running = true; show(0); },
+        stop() {
+            running = false;
+            videos.forEach(v => v.pause());
+            cells.forEach((c, k) => c.classList.toggle("is-active", k === 0));
+        }
+    };
 }
 
 // ── LOADER ────────────────────────────────────────────────────────────────────
@@ -501,7 +565,7 @@ function initDesktopProjectPage() {
     gsap.set(desktopNav,  { autoAlpha: 0 });
 }
 
-function openProjectPage(startIndex, onOpened) {
+function openProjectPage(startIndex) {
     if (!isDesktop || isProjectAnimating || isProjectPageOpen) return;
     isProjectAnimating = true;
     scrollEnabled      = false;
@@ -511,10 +575,9 @@ function openProjectPage(startIndex, onOpened) {
     targetScrollX       = smoothScrollX;
     applyHScroll(smoothScrollX);
 
-    projectInfoMetaTitle.textContent = "";
-    projectInfoMetaDesc.textContent  = "";
-    projectInfoMetaTags.innerHTML    = "";
-    projectInfoMetaDate.textContent  = "";
+    // Meta is always visible — populate it for the starting project.
+    liveMetaIndex = startIndex;
+    populateProjectMeta(startIndex);
 
     gsap.to(projectPage, {
         yPercent: 0,
@@ -528,7 +591,6 @@ function openProjectPage(startIndex, onOpened) {
             projectPage.addEventListener("touchstart", onProjectTouchStart, { passive: true });
             projectPage.addEventListener("touchend",   onProjectTouchEnd,   { passive: true });
             playProjectVideo(projectCurrentIndex);
-            if (onOpened) onOpened();
         }
     });
 }
@@ -542,12 +604,7 @@ function closeProjectPage() {
     projectPage.removeEventListener("touchend",   onProjectTouchEnd);
 
     stopAllProjectVideos();
-
-    if (isInfoExpanded) {
-        isInfoExpanded  = false;
-        isInfoAnimating = false;
-        if (projectMoreBtn) projectMoreBtn.textContent = "MORE";
-    }
+    liveMetaIndex = -1;
 
     gsap.to(projectPage, {
         yPercent: 100,
@@ -564,6 +621,7 @@ function closeProjectPage() {
 function playProjectVideo(index) {
     const panel = document.querySelectorAll(".project-panel")[index];
     if (!panel) return;
+    if (panel._rotation) { panel._rotation.play(); return; }
     const v = panel.querySelector(".project-video");
     if (v) { const p = v.play(); if (p) p.catch(() => {}); }
 }
@@ -571,80 +629,47 @@ function playProjectVideo(index) {
 function stopProjectVideo(index) {
     const panel = document.querySelectorAll(".project-panel")[index];
     if (!panel) return;
+    if (panel._rotation) { panel._rotation.stop(); return; }
     const v = panel.querySelector(".project-video");
     if (v) v.pause();
 }
 
 function stopAllProjectVideos() {
-    document.querySelectorAll(".project-panel .project-video").forEach(v => v.pause());
+    document.querySelectorAll(".project-panel").forEach(panel => {
+        if (panel._rotation) { panel._rotation.stop(); return; }
+        panel.querySelectorAll(".project-video").forEach(v => v.pause());
+    });
 }
 
 // ── PROJECT INFO PANEL ────────────────────────────────────────────────────────
-let isInfoExpanded  = false;
-let isInfoAnimating = false;
+let liveMetaIndex = -1;   // nearest-project meta currently shown (live during horizontal scroll)
 
-function openProjectInfo() {
-    if (isInfoAnimating || isInfoExpanded) return;
-    isInfoAnimating = true;
-    isInfoExpanded  = true;
-
-    if (projectMoreBtn) projectMoreBtn.textContent = "CLOSE";
-
-    const restingH = projectInfoPanel.offsetHeight;
-    populateProjectMeta(projectCurrentIndex);
-
-    gsap.set(projectInfoPanel, { height: "auto", visibility: "hidden" });
-    const targetH = projectInfoPanel.offsetHeight;
-    gsap.set(projectInfoPanel, { height: restingH, visibility: "visible" });
-
-    gsap.to(projectInfoPanel, {
-        height: targetH,
-        duration: 0.65,
-        ease: "power3.inOut",
-        onComplete: () => {
-            gsap.set(projectInfoPanel, { height: "auto" });
-            isInfoAnimating = false;
-        }
-    });
-}
-
-function closeProjectInfo() {
-    if (isInfoAnimating || !isInfoExpanded) return;
-    isInfoAnimating = true;
-    isInfoExpanded  = false;
-
-    if (projectMoreBtn) projectMoreBtn.textContent = "MORE";
-
-    const currentH = projectInfoPanel.offsetHeight;
-    gsap.set(projectInfoPanel, { height: currentH });
-
-    projectInfoMetaTitle.textContent = "";
-    projectInfoMetaDesc.textContent  = "";
-    projectInfoMetaTags.innerHTML    = "";
-    projectInfoMetaDate.textContent  = "";
-
-    gsap.set(projectInfoPanel, { height: "auto", visibility: "hidden" });
-    const restingH = projectInfoPanel.offsetHeight;
-    gsap.set(projectInfoPanel, { height: currentH, visibility: "visible" });
-
-    gsap.to(projectInfoPanel, {
-        height: restingH,
-        duration: 0.5,
-        ease: "power3.inOut",
-        onComplete: () => {
-            gsap.set(projectInfoPanel, { height: "auto" });
-            isInfoAnimating = false;
-        }
-    });
+// Update the meta panel to the nearest project live during horizontal scroll,
+// so the meta changes at the same speed as a fast scroll. The panel is always
+// visible now (no MORE/CLOSE toggle).
+function updateLiveProjectMeta(x) {
+    const w = getPanelW();
+    const N = projectData.length;
+    if (!N) return;
+    const norm = ((x / w) % N + N) % N;
+    const idx  = Math.round(norm) % N;
+    if (idx === liveMetaIndex) return;
+    liveMetaIndex = idx;
+    populateProjectMeta(idx);
+    gsap.fromTo(
+        [projectInfoMetaTitle, projectInfoMetaDesc, projectInfoMetaCredits, projectInfoMetaDate],
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2, ease: "power2.out", overwrite: true }
+    );
 }
 
 function populateProjectMeta(index) {
     const data = projectData[index];
     if (!data) return;
-    projectInfoMetaTitle.textContent = data.title;
-    projectInfoMetaDesc.textContent  = data.description;
-    projectInfoMetaTags.innerHTML    = data.tags.map(t => `<div>${esc(t)}</div>`).join("");
-    projectInfoMetaDate.textContent  = data.date;
+    projectInfoMetaTitle.textContent   = data.title;
+    projectInfoMetaDesc.textContent    = data.description;
+    projectInfoMetaCredits.textContent = data.credits || "";
+    projectInfoMetaDate.textContent    = data.date;
 }
 
 // ── ABOUT ─────────────────────────────────────────────────────────────────────
@@ -819,14 +844,6 @@ if (projectLogoBack) {
     });
 }
 
-if (projectMoreBtn) {
-    projectMoreBtn.addEventListener("click", e => {
-        e.stopPropagation();
-        if (isInfoExpanded) closeProjectInfo();
-        else openProjectInfo();
-    });
-}
-
 // ── RESIZE ────────────────────────────────────────────────────────────────────
 window.addEventListener("resize", () => {
     const wasDesktop = isDesktop;
@@ -860,6 +877,9 @@ window.addEventListener("load", async () => {
     buildSlides(data.projects);
     buildProjectPanels(data.projects);
 
+    // Wire rotation controllers for any multi-video (ba&sh) panels.
+    document.querySelectorAll(".project-panel").forEach(setupPanelRotation);
+
     // Update slides NodeList after DOM injection
     slides = Array.from(document.querySelectorAll(".slide"));
 
@@ -872,7 +892,7 @@ window.addEventListener("load", async () => {
             const idx = parseInt(item.dataset.project, 10);
             if (isNaN(idx)) return;
             closeGallery();
-            gsap.delayedCall(0.4, () => openProjectPage(idx, openProjectInfo));
+            gsap.delayedCall(0.4, () => openProjectPage(idx));
         };
         item.addEventListener("click", e => { e.stopPropagation(); openItem(); });
         item.addEventListener("keydown", e => {
