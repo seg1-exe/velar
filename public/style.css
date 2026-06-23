@@ -598,7 +598,7 @@
     /* ── Media grid — one wide video (60%) + one photo (40%) ── */
     .project-media-grid {
         display: grid;
-        grid-template-columns: 60% 40%;
+        grid-template-columns: 60fr 40fr;
         grid-template-rows: 1fr;
         column-gap: 6px;
         margin: 0 6px;
