@@ -36,6 +36,7 @@ let projectData = [];   // populated from data.json
 let currentIndex     = 0;
 let liveTitleIndex   = -1;   // nearest-slide title currently shown (live during scroll)
 let introHasPlayed   = false;
+let homeUIRevealed   = false;   // true once the intro reveals the nav/logo/titles
 let isDesktop        = window.innerWidth >= 768;
 
 let projectCurrentIndex = 0;
@@ -43,6 +44,7 @@ let isProjectPageOpen   = false;
 let isProjectAnimating  = false;
 
 let isAboutAnimating  = false;
+let aboutVideoInited  = false;   // ASCII video is loaded lazily on first About open
 let isGalleryOpen     = false;
 let isGalleryAnimating = false;
 let currentGalleryTab = "index";
@@ -538,6 +540,8 @@ function runIntroAnimation() {
                     window.addEventListener("touchend",   onTouchEnd,   { passive: true });
 
                     updateDesktopNavTitle(0);
+                    // Reveal nav/logo/titles — and the "CLICK FOR MORE" cursor in sync.
+                    homeUIRevealed = true;
                     if (isDesktop && desktopNav) gsap.to(desktopNav, { autoAlpha: 1, duration: 0.5 });
                     if (!isDesktop && logoFixed)  gsap.to(logoFixed,  { autoAlpha: 1, duration: 0.5 });
 
@@ -680,6 +684,17 @@ function openAbout() {
     isAboutAnimating     = true;
     scrollEnabled        = false;
     projectScrollEnabled = false;
+
+    // Lazy-load the ASCII video the first time About is opened — avoids fetching
+    // flowersWhite.webm (~1.8 MB) on initial page load.
+    if (!aboutVideoInited && typeof initAsciiVideo === "function") {
+        aboutVideoInited = true;
+        initAsciiVideo(
+            document.getElementById("about-ascii-video"),
+            "/medias/flowersWhite.webm",
+            { lightThreshold: 240, colored: false }
+        );
+    }
     gsap.to(aboutOverlay, {
         yPercent: 0, duration: 1, ease: "power4.inOut",
         onComplete: () => { isAboutAnimating = false; }
@@ -822,6 +837,47 @@ if (galleryOverlay) {
 
     footer.insertBefore(emailLink, footer.firstElementChild);
 })();
+
+// ── EXPLORE-THE-PROJECT CURSOR (desktop homepage) ─────────────────────────────
+// A rotating "EXPLORE THE PROJECT" badge that follows the cursor while the home
+// slides are showing. Sits below all overlays (z-index 150) so it's naturally
+// hidden whenever a project page / gallery / about overlay is open.
+const exploreCursor = document.querySelector(".explore-cursor");
+if (exploreCursor) {
+    let exTargetX = window.innerWidth / 2;
+    let exTargetY = window.innerHeight / 2;
+    let exX = exTargetX, exY = exTargetY;
+    let exVisible = false;
+    let mouseInWindow = false;
+
+    // Gated on homeUIRevealed (not introHasPlayed) so it fades in at the exact
+    // moment the intro reveals the logo/titles — in sync with the rest of the UI.
+    const canShowExplore = () =>
+        isDesktop && homeUIRevealed && mouseInWindow &&
+        !isProjectPageOpen && !isGalleryOpen && !isAboutAnimating;
+
+    const setExploreVisible = v => {
+        if (v === exVisible) return;
+        exVisible = v;
+        exploreCursor.classList.toggle("is-visible", v);
+    };
+
+    window.addEventListener("mousemove", e => {
+        exTargetX = e.clientX;
+        exTargetY = e.clientY;
+        mouseInWindow = true;
+    });
+    document.addEventListener("mouseleave", () => { mouseInWindow = false; });
+
+    (function followExplore() {
+        setExploreVisible(canShowExplore());
+        exX += (exTargetX - exX) * 0.2;
+        exY += (exTargetY - exY) * 0.2;
+        exploreCursor.style.transform =
+            `translate3d(${exX}px, ${exY}px, 0) translate(16px, 14px)`;
+        requestAnimationFrame(followExplore);
+    })();
+}
 
 // ── STATIC EVENT BINDINGS ─────────────────────────────────────────────────────
 if (logoFixed)      logoFixed.addEventListener("click",      e => { e.stopPropagation(); openAbout(); });

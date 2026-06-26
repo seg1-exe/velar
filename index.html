@@ -92,7 +92,7 @@
       <img class="desktop-nav__logo" src="/logoWhite.png" alt="Velar logo" draggable="false">
       <span class="desktop-nav__project-title"></span>
       <nav class="desktop-nav__links">
-        <button class="desktop-nav__btn" id="nav-index-case">INDEX/ CASE</button>
+        <button class="desktop-nav__btn" id="nav-index-case" style="display:none">INDEX/ CASE</button>
         <button class="desktop-nav__btn" id="nav-info">INFO</button>
       </nav>
     </header>
@@ -101,6 +101,9 @@
          HOME — slides injectés depuis data.json
     ───────────────────────────────────────────── -->
     <main class="slides-container"></main>
+
+    <!-- Curseur "CLICK FOR MORE" — page d'accueil, desktop uniquement -->
+    <div class="explore-cursor" aria-hidden="true">CLICK FOR MORE</div>
 
     <!-- Mobile logo -->
     <img class="logo-fixed" src="/logoWhite.png" alt="Velar logo" draggable="false">
@@ -221,8 +224,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js" integrity="sha512-7xTD1meeGGoAzwZKA0Z8YelV3qAvRltuwACWXpnxtneF7VAMztOTAi3t4laVSaE4Znq4LMPeGUIYWEvKEk5r3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="main.js"></script>
     <script src="ascii-video.js"></script>
-    <script>
-      initAsciiVideo(document.getElementById("about-ascii-video"), "/medias/flowersWhite.webm", { lightThreshold: 240, colored: false });
-    </script>
   </body>
 </html>

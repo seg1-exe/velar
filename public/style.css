@@ -1116,3 +1116,33 @@
         margin-top: 0 !important;
     }
 }
+
+/* ── Curseur "CLICK FOR MORE" (page d'accueil, desktop) ─────────────────────── */
+.explore-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 150;
+    opacity: 0;
+    transform: translate3d(-200px, -200px, 0) translate(18px, 18px);
+    transition: opacity .5s ease;
+    mix-blend-mode: difference;
+    will-change: transform, opacity;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #fff;
+}
+
+.explore-cursor.is-visible {
+    opacity: 1;
+}
+
+/* Pas de curseur custom sur écrans tactiles / mobiles */
+@media (max-width: 767px), (hover: none) {
+    .explore-cursor { display: none; }
+}

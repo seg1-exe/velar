@@ -13,11 +13,11 @@
       "title": "MAGIC IS BA&SH",
       "description": "Creative direction of the Ba&sh Noël 2025 campaign, where the brand’s signature red aesthetic spreads across Paris through gift machines, television screens and urban installations.",
       "credits": "",
-      "date": "2024",
+      "date": "2025",
       "video": "medias/pieces.mp4",
       "thumb": "medias/PIECES.webp",
-      "videos": ["medias/bash1.mp4", "medias/bash2.mp4", "medias/bash3.mp4"],
-      "posters": ["medias/PIECES.webp", "medias/PIECES.webp", "medias/PIECES.webp"]
+      "videos": ["medias/villeparis.mp4", "medias/pieces.mp4", "medias/teles.mp4"],
+      "posters": ["medias/VILLE.webp", "medias/PIECES.webp", "medias/TELES.webp"]
     },
     {
       "title": "I KEPT MY NAME",
@@ -27,6 +27,24 @@
       "video": "medias/ikeptmyname.mp4",
       "thumb": "medias/I_KEPT_MY_NAME.webp",
       "photo": "medias/I_KEPT_MY_NAME.webp"
+    },
+    {
+      "title": "LA FAUTE DES AUTRES",
+      "description": "La Faute des Autres is a hybrid short film set in a dystopian future where nature has taken control of humankind. Blurring fiction and document, it imagines a world where humans are no longer in charge.",
+      "credits": "Directed by Sara Echeverri and Carmen Moreno.",
+      "date": "2025",
+      "video": "medias/LFDSS.mp4",
+      "thumb": "medias/LFDSS.webp",
+      "photo": "medias/image.webp"
+    },
+    {
+      "title": "NIA",
+      "description": "Character design of a futuristic warrior.",
+      "credits": "",
+      "date": "2025",
+      "video": "medias/NIA.mp4",
+      "thumb": "medias/NIA.webp",
+      "photo": "medias/NIA.webp"
     }
   ],
   "case": [

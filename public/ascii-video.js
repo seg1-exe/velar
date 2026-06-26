@@ -32,26 +32,33 @@
         const rows  = Math.floor(height / cellSize);
         const cells = [];
 
+        // Read the whole frame once, then index into the flat RGBA buffer per
+        // cell — far cheaper than one getImageData() call per 8×8 cell.
+        const data    = ctx.getImageData(0, 0, width, height).data;
+        const charMax = charset.length - 1;
+
         for (let row = 0; row < rows; row++) {
             const line = [];
+            const y0   = row * cellSize;
+            const yEnd = Math.min(y0 + cellSize, height);
             for (let col = 0; col < cols; col++) {
-                const x = col * cellSize;
-                const y = row * cellSize;
-                const sampleW = Math.min(cellSize, width  - x);
-                const sampleH = Math.min(cellSize, height - y);
-                const { data } = ctx.getImageData(x, y, sampleW, sampleH);
+                const x0   = col * cellSize;
+                const xEnd = Math.min(x0 + cellSize, width);
 
-                let luminanceSum = 0, rSum = 0, gSum = 0, bSum = 0;
-                const pixelCount = sampleW * sampleH;
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i], g = data[i + 1], b = data[i + 2];
-                    luminanceSum += 0.299 * r + 0.587 * g + 0.114 * b;
-                    rSum += r; gSum += g; bSum += b;
+                let luminanceSum = 0, rSum = 0, gSum = 0, bSum = 0, pixelCount = 0;
+                for (let y = y0; y < yEnd; y++) {
+                    let i = (y * width + x0) * 4;
+                    for (let x = x0; x < xEnd; x++, i += 4) {
+                        const r = data[i], g = data[i + 1], b = data[i + 2];
+                        luminanceSum += 0.299 * r + 0.587 * g + 0.114 * b;
+                        rSum += r; gSum += g; bSum += b;
+                        pixelCount++;
+                    }
                 }
                 const L = luminanceSum / pixelCount;
                 const char = (L < darkThreshold || L > lightThreshold)
                     ? ' '
-                    : charset[Math.floor((L / 255) * (charset.length - 1))];
+                    : charset[Math.floor((L / 255) * charMax)];
                 line.push({ char, r: rSum / pixelCount, g: gSum / pixelCount, b: bSum / pixelCount });
             }
             cells.push(line);
