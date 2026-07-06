@@ -286,6 +286,29 @@
     font-size: 65px;
 }
 
+/* ── Legal links (under the emails in the info page) ── */
+.about-legal {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 32px;
+    margin-bottom: 48px;
+}
+
+.legal-link {
+    font-size: 16px;
+    text-decoration: none;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    transition: color .2s ease;
+}
+
+.legal-link:hover {
+    color: #000;
+}
+
 /* ── Gallery overlay (mobile-first base) ── */
 .gallery-overlay {
     position: fixed;
