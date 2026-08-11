@@ -98,7 +98,12 @@
     pointer-events: auto;
 }
 
-.media-container video {
+.media-container picture {
+    display: contents;
+}
+
+.media-container video,
+.media-container img {
     position: relative;
     width: 100%;
     height: 100%;
@@ -709,6 +714,20 @@
         line-height: 1.6;
         letter-spacing: 0.04em;
         color: #000;
+    }
+
+    /* Projects without credits: the description also takes the credits column,
+       so long texts stay within the fixed-height bar instead of clipping. */
+    .project-info-meta.no-credits .project-info-meta__description {
+        grid-column: 2 / 4;
+    }
+
+    .project-info-meta.no-credits .project-info-meta__credits {
+        display: none;
+    }
+
+    .project-info-meta.no-credits .project-info-meta__date {
+        grid-column: 4;
     }
 
     .project-info-meta__credits {

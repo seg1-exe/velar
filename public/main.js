@@ -24,6 +24,7 @@ const projectLogoBack      = document.getElementById("project-logo-back");
 const projectInfoBtn       = document.getElementById("project-info-btn");
 const projectTrack         = document.getElementById("project-track");
 const projectInfoPanel     = document.getElementById("project-info-panel");
+const projectInfoMeta      = document.getElementById("project-info-meta");
 const projectInfoMetaTitle = document.getElementById("project-info-meta-title");
 const projectInfoMetaDesc  = document.getElementById("project-info-meta-desc");
 const projectInfoMetaCredits = document.getElementById("project-info-meta-credits");
@@ -343,14 +344,21 @@ function buildSlides(projects) {
         section.className    = "slide";
         section.dataset.index = i;
         section.dataset.title = p.title;
+        // Image-only project: static image (with optional mobile variant) instead
+        // of a video. The <source media> mirrors the JS mobile breakpoint (<768px).
+        const mediaHTML = p.image ? `
+                <picture>
+                    <source media="(max-width: 767px)" srcset="${esc(p.imageMobile || p.image)}">
+                    <img src="${esc(p.image)}" alt="${esc(p.title)}" draggable="false" decoding="async">
+                </picture>` : `
+                <video muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.thumb)}">
+                    <source src="${esc(p.video)}" type="video/mp4">
+                </video>`;
         section.innerHTML = `
             <div class="slide-content">
                 <h2 class="title">${esc(p.title)}</h2>
             </div>
-            <div class="media-container">
-                <video muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.thumb)}">
-                    <source src="${esc(p.video)}" type="video/mp4">
-                </video>
+            <div class="media-container">${mediaHTML}
             </div>`;
         slidesContainer.appendChild(section);
     });
@@ -362,7 +370,17 @@ function buildProjectPanels(projects) {
         article.className       = "project-panel";
         article.dataset.project = i;
 
-        if (Array.isArray(p.videos) && p.videos.length) {
+        if (Array.isArray(p.images) && p.images.length) {
+            // ── Image-only panel: N static images in equal columns. ──
+            const cellsHTML = p.images.map(src => `
+                <div class="project-cell project-cell--photo">
+                    <img src="${esc(src)}" alt="${esc(p.title)} — project visual" draggable="false" loading="lazy" decoding="async">
+                </div>`).join("");
+            article.innerHTML = `
+            <div class="project-media-grid project-media-grid--multi" style="grid-template-columns: repeat(${p.images.length}, 1fr);">
+                ${cellsHTML}
+            </div>`;
+        } else if (Array.isArray(p.videos) && p.videos.length) {
             // ── ba&sh-style panel: N videos that rotate, one playing at a time,
             //    the others showing their poster image. ──
             const cellsHTML = p.videos.map((src, k) => {
@@ -478,7 +496,11 @@ function runIntroAnimation() {
     const duration    = 1.5;
     const easing      = "power1.out";
     const proxy       = { frame: 0 };
-    const totalFrames = slides.length * 5 - 1;
+    // N*5 (not N*5-1): with -1 the tween ends exactly on the last slide's frame,
+    // giving it ~0ms of display — the final eased linger went to the second-to-last
+    // slide instead. Ending on frame N*5 gives the last slide the lingering beat,
+    // then lands on slide 0, which matches what onComplete shows.
+    const totalFrames = slides.length * 5;
     let   lastIndex   = -1;
 
     gsap.set(slides, { zIndex: 1, autoAlpha: 0, scale: 1, y: 0, yPercent: 0 });
@@ -674,6 +696,8 @@ function populateProjectMeta(index) {
     projectInfoMetaDesc.textContent    = data.description;
     projectInfoMetaCredits.textContent = data.credits || "";
     projectInfoMetaDate.textContent    = data.date;
+    // No credits → let the description spread over the credits column too.
+    if (projectInfoMeta) projectInfoMeta.classList.toggle("no-credits", !data.credits);
 }
 
 // ── ABOUT ─────────────────────────────────────────────────────────────────────
