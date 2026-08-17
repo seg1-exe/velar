@@ -86,6 +86,10 @@ function updateLiveTitle(y) {
     if (idx === liveTitleIndex) return;
     liveTitleIndex = idx;
 
+    // Moving to another project cuts the previous video and warms up the new one.
+    pausePlayingSlide();
+    primeSlideVideo(idx);
+
     if (isDesktop) {
         updateDesktopNavTitle(idx);
     } else {
@@ -129,6 +133,10 @@ function snapToSlide(index) {
     if (isSnapping) return;
     isSnapping = true;
 
+    // Arm the dwell now rather than on completion: the 0.9s eased settle is
+    // visually over long before it ends, so waiting for it would feel late.
+    scheduleSlideDwell(index);
+
     const dest  = getSnapDest(index);
     const proxy = { val: smoothScrollY };
 
@@ -148,6 +156,8 @@ function snapToSlide(index) {
             currentIndex  = index;
             updateDesktopNavTitle(index);
             isSnapping = false;
+            // Fallback in case the dwell armed at snap start was cancelled mid-way.
+            if (playingSlideIndex !== index) scheduleSlideDwell(index);
             // Title visibility is handled live during scroll by updateLiveTitle().
         }
     });
@@ -166,6 +176,7 @@ function onWheel(e) {
     if (!scrollEnabled || isProjectPageOpen || isGalleryOpen || isAboutAnimating) return;
     e.preventDefault();
     if (isSnapping) return;
+    stopSlideVideos();
     targetScrollY += e.deltaY;
     scheduleMagneticSnap();
 }
@@ -182,6 +193,7 @@ function onTouchStart(e) {
     _touchStartY       = e.touches[0].clientY;
     _touchStartScrollY = smoothScrollY;
     _touchIsVertical   = null;
+    cancelSlideDwell();
 
     if (snapTween) {
         snapTween.kill();
@@ -200,6 +212,7 @@ function onTouchMove(e) {
         _touchIsVertical = Math.abs(dy) >= Math.abs(dx);
     }
     if (!_touchIsVertical) return;
+    if (playingSlideIndex >= 0) pausePlayingSlide();
 
     e.preventDefault();
     const newY = _touchStartScrollY + dy;
@@ -353,7 +366,8 @@ function buildSlides(projects) {
                 </picture>` : `
                 <video muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.thumb)}">
                     <source src="${esc(p.video)}" type="video/mp4">
-                </video>`;
+                </video>
+                <img class="slide-cover" src="${esc(p.thumb)}" alt="${esc(p.title)}" draggable="false" decoding="async">`;
         section.innerHTML = `
             <div class="slide-content">
                 <h2 class="title">${esc(p.title)}</h2>
@@ -466,16 +480,107 @@ loaderSnapshot.className = "loader-snapshot";
 loader.appendChild(loaderSnapshot);
 
 // ── VIDEO HELPERS ─────────────────────────────────────────────────────────────
+// Home dwell autoplay: linger on a slide for a short beat and that project's
+// video starts by itself (full-bleed, muted). Any scroll — or opening an
+// overlay — puts the project's cover back up.
+// The timer is armed as soon as the magnetic snap starts, so from the moment
+// the user actually stops scrolling the video kicks in at ~160ms (the snap
+// delay) + 300ms — the 0.2–0.5s beat, with the slide already visually home.
+const SLIDE_DWELL_MS = 300;
+let slideDwellTimeout = null;
+let slideDwellIndex   = -1;
+let playingSlideIndex = -1;
+
+// preload="none" keeps the initial page light; start fetching only the slide
+// the user is landing on, so the dwell delay doubles as a head start.
+function primeSlideVideo(index) {
+    const v = slides[index]?.querySelector("video");
+    if (v && v.preload !== "auto") { v.preload = "auto"; v.load(); }
+}
+
+// The cover only fades out once playback has really started, so a slow buffer
+// never leaves a black frame on screen.
+function startSlideVideos(slide, index) {
+    slide.querySelectorAll("video").forEach(v => {
+        const reveal = () => { if (playingSlideIndex === index) slide.classList.add("is-preview"); };
+        const p = v.play();
+        if (p) p.then(reveal).catch(() => {});
+        else reveal();
+    });
+}
+
+// Leaving a preview must bring the project's cover back: pausing alone freezes
+// the shot we left on, and rewinding only lands on the first *video* frame —
+// neither is the cover. Dropping .is-preview fades the cover image back in over
+// the video, which rewinds behind it, ready to replay from the top.
+function coverSlide(slide) {
+    slide.classList.remove("is-preview");
+    slide.querySelectorAll("video").forEach(v => {
+        v.pause();
+        try { v.currentTime = 0; } catch (e) {}
+    });
+}
+
+function playSlideVideo(index) {
+    const slide = slides[index];
+    if (!slide) return;
+    if (!slide.querySelector("video")) return;   // image-only project (festival)
+    playingSlideIndex = index;
+    startSlideVideos(slide, index);
+}
+
+// Stop whatever is playing and restore its cover, without touching a pending
+// dwell timer.
+function pausePlayingSlide() {
+    const slide = slides[playingSlideIndex];
+    if (slide) {
+        slide.classList.remove("is-playing");
+        coverSlide(slide);
+    }
+    playingSlideIndex = -1;
+}
+
+function cancelSlideDwell() {
+    clearTimeout(slideDwellTimeout);
+    slideDwellTimeout = null;
+    slideDwellIndex   = -1;
+}
+
+// Full stop: nothing playing, nothing about to play.
+function stopSlideVideos() {
+    cancelSlideDwell();
+    pausePlayingSlide();
+}
+
+function scheduleSlideDwell(index) {
+    if (slideDwellTimeout && slideDwellIndex === index) return;   // already armed
+    clearTimeout(slideDwellTimeout);
+    slideDwellIndex = index;
+    primeSlideVideo(index);
+    slideDwellTimeout = setTimeout(() => {
+        slideDwellTimeout = null;
+        slideDwellIndex   = -1;
+        if (!scrollEnabled || isGalleryOpen || isAboutAnimating) return;
+        if (isProjectPageOpen || isProjectAnimating) return;   // project page open or sliding in
+        playSlideVideo(index);
+    }, SLIDE_DWELL_MS);
+}
+
 function toggleVideo(index) {
     const slide  = slides[index];
     const videos = slide.querySelectorAll("video");
     if (!videos.length) return;
-    if (videos[0].paused) {
+    cancelSlideDwell();
+    // The dwell autoplay may already be running full-bleed — the first tap
+    // always switches to the contained "full view", the next one stops it.
+    if (!slide.classList.contains("is-playing")) {
         slide.classList.add("is-playing");
-        videos.forEach(v => { const p = v.play(); if (p) p.catch(() => {}); });
+        playingSlideIndex = index;
+        startSlideVideos(slide, index);
     } else {
         slide.classList.remove("is-playing");
-        videos.forEach(v => v.pause());
+        playingSlideIndex = -1;
+        coverSlide(slide);
     }
 }
 
@@ -562,6 +667,7 @@ function runIntroAnimation() {
                     window.addEventListener("touchend",   onTouchEnd,   { passive: true });
 
                     updateDesktopNavTitle(0);
+                    scheduleSlideDwell(0);
                     // Reveal nav/logo/titles — and the "CLICK FOR MORE" cursor in sync.
                     homeUIRevealed = true;
                     if (isDesktop && desktopNav) gsap.to(desktopNav, { autoAlpha: 1, duration: 0.5 });
@@ -595,6 +701,7 @@ function openProjectPage(startIndex) {
     if (!isDesktop || isProjectAnimating || isProjectPageOpen) return;
     isProjectAnimating = true;
     scrollEnabled      = false;
+    stopSlideVideos();
 
     projectCurrentIndex = startIndex;
     smoothScrollX       = startIndex * getPanelW();
@@ -640,6 +747,7 @@ function closeProjectPage() {
             isProjectAnimating = false;
             isProjectPageOpen  = false;
             scrollEnabled      = true;
+            scheduleSlideDwell(currentIndex);
         }
     });
 }
@@ -708,6 +816,7 @@ function openAbout() {
     isAboutAnimating     = true;
     scrollEnabled        = false;
     projectScrollEnabled = false;
+    stopSlideVideos();
 
     // Lazy-load the ASCII video the first time About is opened — avoids fetching
     // flowersWhite.webm (~1.8 MB) on initial page load.
@@ -733,7 +842,7 @@ function closeAbout() {
         onComplete: () => {
             isAboutAnimating = false;
             if (isProjectPageOpen) projectScrollEnabled = true;
-            else scrollEnabled = true;
+            else { scrollEnabled = true; if (!isGalleryOpen) scheduleSlideDwell(currentIndex); }
         }
     });
 }
@@ -793,6 +902,7 @@ function openGallery(tab = "index") {
     isGalleryOpen      = true;
     switchGalleryTab(tab);
     scrollEnabled = false;
+    stopSlideVideos();
     gsap.to(galleryOverlay, {
         yPercent: 0, autoAlpha: 1, duration: 0.9, ease: "power4.inOut",
         onComplete: () => { isGalleryAnimating = false; }
@@ -809,6 +919,7 @@ function closeGallery() {
             gsap.set(galleryOverlay, { autoAlpha: 0 });
             isGalleryAnimating = false;
             scrollEnabled      = true;
+            scheduleSlideDwell(currentIndex);
         }
     });
 }

@@ -116,6 +116,26 @@
     object-fit: contain;
 }
 
+/* ── Slide cover ──
+   The project cover, layered over its video. It fades out once the preview
+   actually starts playing and fades straight back in when we leave, so a slide
+   we walk away from shows its cover again instead of the frame it stopped on. */
+.media-container .slide-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.slide.is-preview .media-container .slide-cover {
+    opacity: 0;
+}
+
 /* ── Slide content ── */
 .slide-content {
     position: relative;

@@ -20,6 +20,16 @@
       "posters": ["medias/VILLE.webp", "medias/PIECES.webp", "medias/TELES.webp"]
     },
     {
+      "title": "Velar Short Film Festival",
+      "description": "We believe the greatest part of creating is sharing. For our 2026 edition, more than ten artists came together to present their work through an immersive audiovisual and interactive exhibition, creating a space where cinema, digital art, and collective imagination meet beyond the screen.",
+      "credits": "",
+      "date": "2026 Edition",
+      "image": "medias/DANSE.webp",
+      "imageMobile": "medias/DANSE_MOBILE.webp",
+      "thumb": "medias/DANSE.webp",
+      "images": ["medias/AFFICHE.webp", "medias/ALBERTO.webp", "medias/PAOPLE.webp"]
+    },
+    {
       "title": "I KEPT MY NAME",
       "description": "A visual essay reflecting on transformation and permanence. As memories, matter, and experiences are replaced, what survives the passage of time?",
       "credits": "DIRECTED, WRITTEN AND EDITED BY Carmen Moreno & Carlos Didier STARRING Marina Obba",
@@ -45,16 +55,6 @@
       "video": "medias/NIA.mp4",
       "thumb": "medias/NIA.webp",
       "photo": "medias/NIA_PHOTO.webp"
-    },
-    {
-      "title": "Velar Short Film Festival",
-      "description": "We believe the greatest part of creating is sharing. For our 2026 edition, more than ten artists came together to present their work through an immersive audiovisual and interactive exhibition, creating a space where cinema, digital art, and collective imagination meet beyond the screen.",
-      "credits": "",
-      "date": "2026 Edition",
-      "image": "medias/DANSE.webp",
-      "imageMobile": "medias/DANSE_MOBILE.webp",
-      "thumb": "medias/DANSE.webp",
-      "images": ["medias/AFFICHE.webp", "medias/ALBERTO.webp", "medias/PAOPLE.webp", "medias/DANSE.webp"]
     }
   ],
   "case": [
