@@ -772,6 +772,8 @@
     /* ── About overlay on desktop ── */
     .about-overlay {
         z-index: 3000;
+        /* The layout below fits one screen down to ~580px tall; scrolling stays
+           available under that so nothing is ever clipped out of reach. */
     }
 
     /* ═══════════════════════════════════════════════
@@ -954,13 +956,17 @@
     .about-container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 48px 60px 60px;
+        padding: clamp(24px, 4.5vh, 48px) 60px clamp(24px, 4.5vh, 60px);
         display: flex;
         flex-direction: column;
         align-items: stretch;
         box-sizing: border-box;
         position: relative;
-        min-height: 100vh;     /* the whole INFO fits in one screen */
+        /* The whole INFO fits in one screen: fixed height, and every gap below
+           is expressed in vh so a short laptop screen tightens the rhythm
+           instead of pushing the legal links out of view. */
+        height: 100vh;
+        height: 100dvh;
     }
 
     /* Top bar: logo left, BACK right */
@@ -968,13 +974,14 @@
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        margin-bottom: 40px;
+        margin-bottom: clamp(16px, 4vh, 40px);
     }
 
     .about-logo {
         width: auto;
         max-width: 220px;
         height: auto;
+        max-height: clamp(56px, 12vh, 106px);
         margin: 0;
         object-fit: contain;
         align-self: flex-start;
@@ -991,7 +998,7 @@
 
     /* Description + address block */
     .about-description {
-        margin-bottom: 36px;
+        margin-bottom: clamp(16px, 3.5vh, 36px);
         max-width: 680px;
     }
 
@@ -1001,7 +1008,7 @@
         line-height: 1.5;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        margin: 0 0 24px 0;
+        margin: 0 0 clamp(12px, 2.5vh, 24px) 0;
     }
 
     .about-address {
@@ -1020,7 +1027,7 @@
         grid-template-columns: 1fr 1fr;
         gap: 48px;
         align-items: start;
-        margin-bottom: 40px;
+        margin-bottom: clamp(16px, 3.5vh, 40px);
     }
 
     .about-services {
@@ -1085,6 +1092,11 @@
     .about-footer {
         margin-top: auto;
         gap: 0;
+        margin-bottom: 0;
+    }
+
+    .about-legal {
+        margin-top: clamp(12px, 3vh, 32px);
         margin-bottom: 0;
     }
 

@@ -357,6 +357,10 @@ function buildSlides(projects) {
         section.className    = "slide";
         section.dataset.index = i;
         section.dataset.title = p.title;
+        // Optional per-slide cover: falls back to the thumb, which is also the
+        // INDEX vignette. Set "cover" when the home video is a different cut
+        // from the one the vignette represents (ba&sh).
+        const cover = p.cover || p.thumb;
         // Image-only project: static image (with optional mobile variant) instead
         // of a video. The <source media> mirrors the JS mobile breakpoint (<768px).
         const mediaHTML = p.image ? `
@@ -364,10 +368,10 @@ function buildSlides(projects) {
                     <source media="(max-width: 767px)" srcset="${esc(p.imageMobile || p.image)}">
                     <img src="${esc(p.image)}" alt="${esc(p.title)}" draggable="false" decoding="async">
                 </picture>` : `
-                <video muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.thumb)}">
+                <video muted loop playsinline preload="none" aria-hidden="true" poster="${esc(cover)}">
                     <source src="${esc(p.video)}" type="video/mp4">
                 </video>
-                <img class="slide-cover" src="${esc(p.thumb)}" alt="${esc(p.title)}" draggable="false" decoding="async">`;
+                <img class="slide-cover" src="${esc(cover)}" alt="${esc(p.title)}" draggable="false" decoding="async">`;
         section.innerHTML = `
             <div class="slide-content">
                 <h2 class="title">${esc(p.title)}</h2>

@@ -42,7 +42,6 @@ velar/
 │   ├── reset.css            # Reset CSS
 │   ├── logoWhite.png        # Logo blanc (accueil / nav)
 │   ├── logoBlack.png        # Logo noir (page projet / about)
-│   ├── assetAbout.png       # Image de la page About
 │   └── medias/              # Vidéos, posters et images des projets
 │       └── case/            # Images de l'onglet CASE
 ├── package.json
@@ -139,7 +138,7 @@ Le tableau `"case"` liste les chemins des images affichées dans l'onglet **CASE
 ### Modifier les médias statiques
 
 - **Logos** : remplacer `public/logoWhite.png` et `public/logoBlack.png`.
-- **Image About** : remplacer `public/assetAbout.png`.
+- **Visuel About** : vidéo ASCII rendue depuis `public/medias/flowersWhite.webm`.
 
 ### Modifier le texte About
 

@@ -14,7 +14,8 @@
       "description": "Creative direction of the Ba&sh Noël 2025 campaign, where the brand’s signature red aesthetic spreads across Paris through gift machines, television screens and urban installations.",
       "credits": "",
       "date": "2025",
-      "video": "medias/pieces.mp4",
+      "video": "medias/TELES_desktop.mp4",
+      "cover": "medias/TELES_DESKTOP.webp",
       "thumb": "medias/PIECES.webp",
       "videos": ["medias/villeparis.mp4", "medias/pieces.mp4", "medias/teles.mp4"],
       "posters": ["medias/VILLE.webp", "medias/PIECES.webp", "medias/TELES.webp"]
@@ -24,8 +25,7 @@
       "description": "We believe the greatest part of creating is sharing. For our 2026 edition, more than ten artists came together to present their work through an immersive audiovisual and interactive exhibition, creating a space where cinema, digital art, and collective imagination meet beyond the screen.",
       "credits": "",
       "date": "2026 Edition",
-      "image": "medias/DANSE.webp",
-      "imageMobile": "medias/DANSE_MOBILE.webp",
+      "video": "medias/festival.mp4",
       "thumb": "medias/DANSE.webp",
       "images": ["medias/AFFICHE.webp", "medias/ALBERTO.webp", "medias/PAOPLE.webp"]
     },
