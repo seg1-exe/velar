@@ -1,6 +1,17 @@
 {
   "projects": [
     {
+      "title": "BVLGARI",
+      "description": "CGI film for Bvlgari's Allegra collection, where the Baciami and Baciami Ancora fragrances take shape between rose, vanilla, marble and light, in a warm, cinematic red.",
+      "credits": "",
+      "date": "2026",
+      "video": "medias/bvlgari.mp4",
+      "fullVideo": "medias/bvlgari_full.mp4",
+      "portrait": true,
+      "thumb": "medias/BVLGARI.webp",
+      "photo": "medias/BVLGARI_PHOTO.webp"
+    },
+    {
       "title": "MONIKA",
       "description": "Monika navigates a strange and oversized city, accompanied by a keyboard she seems unable to part with. As her journey unfolds, she is faced with a decision that may redefine her connection to the past.",
       "credits": "DIRECTED, WRITTEN AND EDITED BY Carmen Moreno, Carlos Didier, Sara Echeverri STARRING Monika JIA PRODUCED BY Velar",
@@ -30,6 +41,17 @@
       "images": ["medias/AFFICHE.webp", "medias/ALBERTO.webp", "medias/PAOPLE.webp"]
     },
     {
+      "title": "ARCANE",
+      "description": "Creative direction and production of the Arcane Étoile jewelry campaign film, shot in Paris in July 2026, following Dara as he finds the key that unlocks the brand's hidden universe.",
+      "credits": "",
+      "date": "2026",
+      "video": "medias/arcane.mp4",
+      "fullVideo": "medias/arcane_full.mp4",
+      "cover": "medias/ARCANE_COVER.webp",
+      "thumb": "medias/ARCANE.webp",
+      "photo": "medias/ARCANE_PHOTO.webp"
+    },
+    {
       "title": "I KEPT MY NAME",
       "description": "A visual essay reflecting on transformation and permanence. As memories, matter, and experiences are replaced, what survives the passage of time?",
       "credits": "DIRECTED, WRITTEN AND EDITED BY Carmen Moreno & Carlos Didier STARRING Marina Obba",
@@ -46,15 +68,6 @@
       "video": "medias/LFDSS.mp4",
       "thumb": "medias/LFDSS_THUMB.webp",
       "photo": "medias/image.webp"
-    },
-    {
-      "title": "NIA",
-      "description": "Character design of a futuristic warrior.",
-      "credits": "",
-      "date": "2025",
-      "video": "medias/NIA.mp4",
-      "thumb": "medias/NIA.webp",
-      "photo": "medias/NIA_PHOTO.webp"
     }
   ],
   "case": [

@@ -30,6 +30,13 @@ const projectInfoMetaDesc  = document.getElementById("project-info-meta-desc");
 const projectInfoMetaCredits = document.getElementById("project-info-meta-credits");
 const projectInfoMetaDate  = document.getElementById("project-info-meta-date");
 
+// ── FEATURE FLAGS ────────────────────────────────────────────────────────────
+// Mobile tap-to-reveal description + credits over the slide (highlighted lines
+// with the bar-then-letters reveal). Shelved for now: with the flag off the tap
+// keeps its original behaviour (video in contained "full view"). Flip to true
+// to bring it back — the code, CSS and README section are all still in place.
+const MOBILE_TAP_INFO = false;
+
 // ── APP STATE ─────────────────────────────────────────────────────────────────
 let slides      = [];   // populated after buildSlides()
 let projectData = [];   // populated from data.json
@@ -88,6 +95,7 @@ function updateLiveTitle(y) {
 
     // Moving to another project cuts the previous video and warms up the new one.
     pausePlayingSlide();
+    hideSlideInfo();
     primeSlideVideo(idx);
 
     if (isDesktop) {
@@ -213,6 +221,7 @@ function onTouchMove(e) {
     }
     if (!_touchIsVertical) return;
     if (playingSlideIndex >= 0) pausePlayingSlide();
+    hideSlideInfo();
 
     e.preventDefault();
     const newY = _touchStartScrollY + dy;
@@ -372,12 +381,21 @@ function buildSlides(projects) {
                     <source src="${esc(p.video)}" type="video/mp4">
                 </video>
                 <img class="slide-cover" src="${esc(cover)}" alt="${esc(p.title)}" draggable="false" decoding="async">`;
+        // Mobile tap-to-reveal info: description + credits as highlighted
+        // lines over the video (hidden on desktop, where a click opens the
+        // project page). The raw text is kept in data-text; on open it is
+        // split into one .line per rendered line (see splitInfoLines).
+        const infoHTML = (MOBILE_TAP_INFO && (p.description || p.credits)) ? `
+            <div class="slide-info">${p.description ? `
+                <p class="slide-info__text slide-info__desc" data-text="${esc(p.description)}">${esc(p.description)}</p>` : ""}${p.credits ? `
+                <p class="slide-info__text slide-info__credits" data-text="${esc(p.credits)}">${esc(p.credits)}</p>` : ""}
+            </div>` : "";
         section.innerHTML = `
             <div class="slide-content">
                 <h2 class="title">${esc(p.title)}</h2>
             </div>
             <div class="media-container">${mediaHTML}
-            </div>`;
+            </div>${infoHTML}`;
         slidesContainer.appendChild(section);
     });
 }
@@ -417,16 +435,24 @@ function buildProjectPanels(projects) {
             </div>`;
         } else {
             // ── Standard panel: one wide video (70%) + one photo (30%). ──
+            // Optional per-project long cut: the home slide keeps the short
+            // teaser (p.video); the project page plays p.fullVideo when set.
+            const panelVideo = p.fullVideo || p.video;
+            // Same poster as the home slide: the optional cover, else the thumb.
+            const panelPoster = p.cover || p.thumb;
+            // Vertical project-page video (bvlgari): keep its 9:16 frame
+            // uncropped and give the photo the rest of the width.
+            const gridClass  = p.portrait ? "project-media-grid project-media-grid--portrait" : "project-media-grid";
             const photo = p.photo || (p.photos && p.photos[0]);
             const photoHTML = photo ? `
                 <div class="project-cell project-cell--photo">
                     <img src="${esc(photo)}" alt="${esc(p.title)} — project visual" draggable="false" loading="lazy" decoding="async">
                 </div>` : "";
             article.innerHTML = `
-            <div class="project-media-grid">
+            <div class="${gridClass}">
                 <div class="project-cell project-cell--video">
-                    <video class="project-video" muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.thumb)}">
-                        <source src="${esc(p.video)}" type="video/mp4">
+                    <video class="project-video" muted loop playsinline preload="none" aria-hidden="true" poster="${esc(panelPoster)}">
+                        <source src="${esc(panelVideo)}" type="video/mp4">
                     </video>
                 </div>
                 ${photoHTML}
@@ -554,6 +580,7 @@ function cancelSlideDwell() {
 function stopSlideVideos() {
     cancelSlideDwell();
     pausePlayingSlide();
+    hideSlideInfo();
 }
 
 function scheduleSlideDwell(index) {
@@ -570,6 +597,7 @@ function scheduleSlideDwell(index) {
     }, SLIDE_DWELL_MS);
 }
 
+// ── MOBILE TAP → VIDEO FULL VIEW (default while MOBILE_TAP_INFO is off) ──────
 function toggleVideo(index) {
     const slide  = slides[index];
     const videos = slide.querySelectorAll("video");
@@ -586,6 +614,89 @@ function toggleVideo(index) {
         playingSlideIndex = -1;
         coverSlide(slide);
     }
+}
+
+// ── MOBILE TAP → PROJECT INFO (shelved, see MOBILE_TAP_INFO) ─────────────────
+// Tapping the current slide reveals its description and credits as highlighted
+// lines over the video (each line carries its own white background), then a
+// second tap hides them. Reveal sequence, line by line: the white background
+// sweeps in from the side first (description from the left, credits from the
+// right), then the letters of the line rise into place from below through
+// its clipped mask, one after another from the left. Hiding plays the same
+// sequence backwards. The tap is
+// a user gesture, so it also starts the video if the dwell autoplay was
+// blocked. Scrolling away or opening an overlay hides the info.
+let infoSlideIndex = -1;
+
+// Split a paragraph's raw text (data-text) into one .line per rendered line,
+// each with a background span and a masked text span whose letters are
+// wrapped one by one (.char) so they can rise individually. Re-done on every
+// open, so the split always matches the current width and font.
+function splitInfoLines(p) {
+    const text  = p.dataset.text || "";
+    const words = text.split(/\s+/).filter(Boolean);
+    // Measure: lay the words out as plain inline spans and read where they wrap.
+    p.innerHTML = "";
+    const probe = document.createElement("span");
+    probe.className = "slide-info__probe";
+    words.forEach(w => {
+        const s = document.createElement("span");
+        s.textContent = w + " ";
+        probe.appendChild(s);
+    });
+    p.appendChild(probe);
+    const lines = [];
+    let lastTop = null;
+    Array.from(probe.children).forEach(s => {
+        if (s.offsetTop !== lastTop) { lastTop = s.offsetTop; lines.push([]); }
+        lines[lines.length - 1].push(s.textContent.trim());
+    });
+    p.innerHTML = lines.map(ws => {
+        const chars = ws.join(" ").split("").map(ch => ch === " " ? " " : `<span class="char">${esc(ch)}</span>`).join("");
+        return `<span class="line"><span class="line__bg"></span><span class="line__in">${chars}</span></span>`;
+    }).join("");
+}
+
+function toggleSlideInfo(index) {
+    const slide = slides[index];
+    const info  = slide && slide.querySelector(".slide-info");
+    if (!info) return;
+    if (infoSlideIndex === index) { hideSlideInfo(); return; }
+    hideSlideInfo();
+    infoSlideIndex = index;
+    slide.classList.add("is-info");
+
+    info.querySelectorAll(".slide-info__text").forEach(splitInfoLines);
+    const bgs = info.querySelectorAll(".line__bg");
+    if (slide._infoTl) slide._infoTl.kill();
+    // Per-group origins; a project without credits has no credit lines, and
+    // GSAP warns on an empty target list, hence the length guards.
+    const descBgs = info.querySelectorAll(".slide-info__desc .line__bg");
+    const credBgs = info.querySelectorAll(".slide-info__credits .line__bg");
+    if (descBgs.length) gsap.set(descBgs, { scaleX: 0, transformOrigin: "left center"  });
+    if (credBgs.length) gsap.set(credBgs, { scaleX: 0, transformOrigin: "right center" });
+    slide._infoTl = gsap.timeline()
+        .to(bgs, { scaleX: 1, ease: "power2.out", duration: 0.5, stagger: 0.04 }, 0);
+    // Letters: each line starts 0.06s after the previous one; within a line the
+    // letters rise from below the mask left to right, spread over 0.25s.
+    info.querySelectorAll(".line").forEach((line, k) => {
+        const chars = line.querySelectorAll(".char");
+        gsap.set(chars, { y: line.clientHeight + 1 });
+        slide._infoTl.to(chars, { y: 0, ease: "power3.out", duration: 0.7, stagger: { amount: 0.25 } }, 0.17 + k * 0.06);
+    });
+
+    if (playingSlideIndex !== index) { cancelSlideDwell(); playSlideVideo(index); }
+}
+
+function hideSlideInfo() {
+    if (infoSlideIndex < 0) return;
+    const slide = slides[infoSlideIndex];
+    infoSlideIndex = -1;
+    if (!slide) return;
+    const tl = slide._infoTl;
+    if (!tl) { slide.classList.remove("is-info"); return; }
+    tl.eventCallback("onReverseComplete", () => slide.classList.remove("is-info"));
+    tl.timeScale(1.6).reverse();
 }
 
 function updateDesktopNavTitle(index) {
@@ -823,8 +934,9 @@ function openAbout() {
     stopSlideVideos();
 
     // Lazy-load the ASCII video the first time About is opened — avoids fetching
-    // flowersWhite.webm (~1.8 MB) on initial page load.
-    if (!aboutVideoInited && typeof initAsciiVideo === "function") {
+    // flowersWhite.webm (~1.8 MB) on initial page load. Desktop only: the
+    // visual is hidden on mobile, so the video is never fetched there.
+    if (isDesktop && !aboutVideoInited && typeof initAsciiVideo === "function") {
         aboutVideoInited = true;
         initAsciiVideo(
             document.getElementById("about-ascii-video"),
@@ -1099,11 +1211,12 @@ window.addEventListener("load", async () => {
         });
     });
 
-    // Slide clicks — mobile: toggle video / desktop: open project page
+    // Slide clicks — mobile: video full view (or description + credits when
+    // MOBILE_TAP_INFO is on) / desktop: open project page
     slides.forEach((slide, index) => {
         slide.addEventListener("click", () => {
             if (!introHasPlayed || index !== currentIndex) return;
-            if (!isDesktop) toggleVideo(index);
+            if (!isDesktop) (MOBILE_TAP_INFO ? toggleSlideInfo : toggleVideo)(index);
             else            openProjectPage(index);
         });
     });

@@ -159,6 +159,11 @@
     text-align: center;
 }
 
+/* ── Tap-to-reveal project info — mobile only, see the mobile block ── */
+.slide-info {
+    display: none;
+}
+
 /* ── Mobile fixed logo ── */
 .logo-fixed {
     position: fixed;
@@ -660,6 +665,26 @@
         grid-template-columns: repeat(3, 1fr);
     }
 
+    /* ── Portrait variant (bvlgari) — the video cell is a bit wider than the
+          9:16 source (2:3), so the video zooms in slightly under object-fit:
+          cover; the photo takes every remaining pixel. Flex rather than grid
+          so the video width derives from the (definite) height. ── */
+    .project-media-grid--portrait {
+        display: flex;
+        column-gap: 6px;
+    }
+
+    .project-media-grid--portrait .project-cell--video {
+        flex: 0 0 auto;
+        height: 100%;
+        aspect-ratio: 2 / 3;
+    }
+
+    .project-media-grid--portrait .project-cell--photo {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
     .project-cell {
         overflow: hidden;
         background: #000;
@@ -1115,8 +1140,95 @@
         padding: 24px;
     }
 
+    /* ── Tap-to-reveal project info: description + credits as highlighted
+          lines over the video: description lines flush with the left edge,
+          credits lines flush with the right edge, a gap between the two
+          groups and none between lines. Each rendered line is its
+          own .line: a white background (.line__bg, swept in from the side) and
+          the text (.line__in), whose letters (.char) rise one by one through
+          the overflow mask of the line. Transform origins are set by main.js.
+          Lines are built at open time by splitInfoLines() in main.js. ── */
+    .slide-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        /* Anchored to the bottom, clear of the fixed logo (bottom 20px + ~95px tall). */
+        bottom: 140px;
+        z-index: 11;
+        pointer-events: none;
+        visibility: hidden;
+    }
+
+    .slide.is-info .slide-info {
+        visibility: visible;
+    }
+
+    .slide-info__text {
+        margin: 0;
+        max-width: 100%;
+        color: #000;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.25;
+        text-transform: uppercase;
+    }
+
+    .slide-info__credits {
+        align-self: flex-end;
+    }
+
+    .slide-info__credits .line {
+        margin-left: auto;
+    }
+
+    /* Measuring pass: same horizontal padding as a line so the wrap points
+       match; the probe is replaced by the lines right away. */
+    .slide-info__probe {
+        display: block;
+        padding: 0 10px;
+    }
+
+    .slide-info .line {
+        display: block;
+        position: relative;
+        width: fit-content;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 5px 10px;
+        overflow: hidden;
+    }
+
+    .slide-info .line__bg {
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        will-change: transform;
+    }
+
+    .slide-info .line__in {
+        position: relative;
+        display: block;
+        white-space: nowrap;
+    }
+
+    .slide-info .char {
+        display: inline-block;
+        will-change: transform;
+    }
+
+    /* The whole About fits one screen: the container is at least the viewport
+       tall, the footer is pushed to the bottom, and the blocks above are sized
+       so nothing overflows on a regular phone (it still scrolls on very short
+       screens rather than clipping). */
     .about-container {
-        padding: 24px 20px;
+        padding: 20px 20px 24px;
+        box-sizing: border-box;
+        min-height: 100vh;
+        min-height: 100dvh;
     }
 
     .title {
@@ -1133,50 +1245,71 @@
     }
 
     .about-logo {
-        width: 80%;
-        margin-top: 60px;
-        margin-bottom: 48px;
+        width: 64%;
+        margin-top: 32px;
+        margin-bottom: 24px;
     }
 
     .about-description {
-        margin-bottom: 48px;
+        margin-bottom: 24px;
     }
 
     .about-description p {
-        font-size: 16px;
+        font-size: 15px;
+    }
+
+    /* Address: same treatment as desktop (uppercase, tracked), and the row is
+       stretched to the full width so it sits on the left like the description
+       instead of being centred by the container. */
+    .about-middle {
+        width: 100%;
+        margin-bottom: 24px;
     }
 
     .about-address {
         margin-top: 20px;
+        font-style: normal;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        text-align: left;
     }
 
     .about-services {
         grid-template-columns: 1fr;
-        gap: 16px;
-        font-size: 16px;
-        margin-bottom: 48px;
+        gap: 8px;
+        font-size: 15px;
+        margin-top: 24px;
+        margin-bottom: 0;
     }
 
     .service-label {
-        margin-bottom: 8px;
+        margin-bottom: 4px;
     }
 
+    /* No ASCII flower on mobile (main.js also skips loading the video). */
     .about-visual {
-        margin-bottom: 60px;
-    }
-
-    .about-visual .ascii-video {
-        width: 100%;
-        margin-left: 0;
+        display: none;
     }
 
     .contact-link {
-        font-size: 28px;
+        font-size: clamp(22px, 3.4vh, 28px);
         line-height: 1.1;
     }
 
     .contact-link i {
-        font-size: 28px;
+        font-size: clamp(22px, 3.4vh, 28px);
+    }
+
+    /* Footer pinned to the bottom of the screen, legal links right under it. */
+    .about-footer {
+        margin-top: auto;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .about-legal {
+        margin-top: 0;
+        margin-bottom: 0;
     }
 
     .logo-fixed {
