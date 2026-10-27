@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page not found — VELAR</title>
+    <meta name="description" content="This page does not exist on velar-studio.com.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="icon"             href="/medias/icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/medias/icon.png">
+    <link rel="stylesheet" href="/reset.css">
+    <style>
+      /* ── Full-screen stage. Two themes: dark (black bg, white logo) and
+            light (white bg, black logo). Every wall hit flips the theme. ── */
+      html, body {
+        height: 100%;
+        margin: 0;
+        background: #000;
+        color: #fff;
+        font-family: 'Helvetica Neue', sans-serif;
+        overflow: hidden;
+      }
+
+      .stage {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;   /* stable on mobile despite URL-bar show/hide */
+        overflow: hidden;
+        background: #000;
+      }
+
+      .stage.is-light { background: #fff; }
+
+      /* ── Bouncing logo (DVD screensaver) ───────────────────────────────── */
+      .dvd {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: clamp(120px, 18vw, 220px);
+        will-change: transform;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      .dvd img {
+        display: block;
+        width: 100%;
+        height: auto;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      /* Both logos are in the DOM so the swap is instant, no flash. */
+      .dvd .logo-black            { display: none; }
+      .stage.is-light .logo-white { display: none; }
+      .stage.is-light .logo-black { display: block; }
+
+      /* ── Message — centred; drawn in "difference" so it reads white on the
+            black theme, black on the white theme, and inverts over the logo. ── */
+      .msg {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        padding: 0 24px;
+        text-align: center;
+        color: #fff;
+        z-index: 20;
+        pointer-events: none;
+        mix-blend-mode: difference;
+      }
+
+      .msg__title {
+        max-width: 22ch;
+        font-size: 32px;
+        font-weight: 400;
+        line-height: 1.2;
+        text-transform: uppercase;
+      }
+
+      .msg__link {
+        pointer-events: auto;
+        font-size: 13px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: inherit;
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .msg__link:hover { opacity: 0.5; }
+
+      @media (max-width: 767px) {
+        .msg__title { font-size: 20px; }
+      }
+
+      /* No bouncing for people who asked for less motion: the logo rests
+         near the bottom, still on screen, and the theme never flips. */
+      @media (prefers-reduced-motion: reduce) {
+        .dvd {
+          top: auto;
+          left: 50%;
+          bottom: 48px;
+          transform: translateX(-50%) !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage" id="stage">
+
+      <div class="dvd" id="dvd" aria-hidden="true">
+        <img class="logo-white" src="/logoWhite.png" alt="" draggable="false">
+        <img class="logo-black" src="/logoBlack.png" alt="" draggable="false">
+      </div>
+
+      <main class="msg">
+        <h1 class="msg__title">Sorry, we couldn’t find this page.</h1>
+        <a class="msg__link" href="/">&larr; Back to home</a>
+      </main>
+
+    </div>
+
+    <script>
+      // DVD-screensaver bounce: constant speed, straight lines, the logo
+      // flips direction on each wall — and the whole page flips theme
+      // (black/white logo, white/black background) on every hit. Time-based
+      // so the speed is the same at any frame rate; a corner hit counts as
+      // one flip.
+      (function () {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        const stage = document.getElementById("stage");
+        const dvd   = document.getElementById("dvd");
+        const SPEED = 140;   // px per second
+        let x, y, vx, vy, last = null;
+
+        function bounds() {
+          return { w: stage.clientWidth - dvd.offsetWidth, h: stage.clientHeight - dvd.offsetHeight };
+        }
+
+        function start() {
+          const b = bounds();
+          x = Math.random() * Math.max(0, b.w);
+          y = Math.random() * Math.max(0, b.h);
+          // Roughly 35° so it takes a while to hit a corner.
+          const a = (35 * Math.PI) / 180;
+          vx = Math.cos(a) * (Math.random() < 0.5 ? 1 : -1);
+          vy = Math.sin(a) * (Math.random() < 0.5 ? 1 : -1);
+          dvd.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+        }
+
+        function frame(t) {
+          if (last === null) last = t;
+          const dt = Math.min((t - last) / 1000, 0.05);   // cap after a tab switch
+          last = t;
+          const b = bounds();
+          let hit = false;
+          x += vx * SPEED * dt;
+          y += vy * SPEED * dt;
+          if (x <= 0)   { x = 0;   vx =  Math.abs(vx); hit = true; }
+          if (x >= b.w) { x = b.w; vx = -Math.abs(vx); hit = true; }
+          if (y <= 0)   { y = 0;   vy =  Math.abs(vy); hit = true; }
+          if (y >= b.h) { y = b.h; vy = -Math.abs(vy); hit = true; }
+          if (hit) stage.classList.toggle("is-light");
+          dvd.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+          requestAnimationFrame(frame);
+        }
+
+        // Keep the logo inside the stage when the viewport changes.
+        window.addEventListener("resize", () => {
+          const b = bounds();
+          x = Math.min(x, Math.max(0, b.w));
+          y = Math.min(y, Math.max(0, b.h));
+        });
+
+        const img = dvd.querySelector(".logo-white");
+        const go  = () => { start(); requestAnimationFrame(frame); };
+        if (img.complete) go(); else img.addEventListener("load", go, { once: true });
+      })();
+    </script>
+  </body>
+</html>

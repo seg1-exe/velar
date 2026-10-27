@@ -43,6 +43,7 @@ velar/
 │   ├── legal.css             # Styles des pages légales
 │   ├── legal-notice.html     # Mentions légales
 │   ├── privacy-policy.html   # Politique de confidentialité
+│   ├── 404.html              # Page introuvable (logo qui rebondit façon écran de veille DVD)
 │   ├── robots.txt / sitemap.xml
 │   ├── logoWhite.png         # Logo blanc (accueil / nav)
 │   ├── logoBlack.png         # Logo noir (page projet / galerie / about)
@@ -173,6 +174,7 @@ ffmpeg -i source.png -vf "scale=1920:-2" -c:v libwebp -quality 85 medias/MONPROJ
 - **Visuel About** : `public/medias/flowersWhite.webm`, rendu en ASCII par `ascii-video.js`, sur desktop uniquement (masqué et non chargé sur mobile).
 - **Texte About** : directement dans `index.html`, blocs `.about-description` (présentation), `.service-list` (services), `.about-address` (adresse) et `.about-footer` (Instagram). L'email est assemblé par `main.js` pour éviter le spam.
 - **Pages légales** : `public/legal-notice.html` et `public/privacy-policy.html`, en `noindex`.
+- **Page 404** : `public/404.html`, autonome (CSS et JS inclus), en `noindex`. Plein écran, logo qui rebondit sur les bords façon écran de veille DVD, message centré avec lien vers l'accueil. À chaque rebond la page bascule entre fond noir / logo blanc et fond blanc / logo noir. L'hébergeur doit servir ce fichier pour les URL inconnues (Cloudflare Pages et Netlify le font automatiquement pour un `404.html` à la racine).
 - **SEO** : title, meta description, Open Graph, Twitter Card et JSON-LD dans `index.html` ; `public/sitemap.xml` et `public/robots.txt`. L'image de partage est `public/medias/velar-og.jpg`.
 
 ## Build de production
