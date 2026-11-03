@@ -5,10 +5,13 @@
       "description": "CGI film for Bvlgari's Allegra collection, where the Baciami and Baciami Ancora fragrances take shape between rose, vanilla, marble and light, in a warm, cinematic red.",
       "credits": "",
       "date": "2026",
+      "tapFullView": false,
       "video": "medias/bvlgari.mp4",
+      "videoMobile": "medias/bvlgari_full.mp4",
       "fullVideo": "medias/bvlgari_full.mp4",
       "portrait": true,
       "thumb": "medias/BVLGARI.webp",
+      "coverMobile": "medias/BVLGARI_MOBILE.webp",
       "photo": "medias/BVLGARI_PHOTO.webp"
     },
     {
@@ -18,13 +21,15 @@
       "date": "2026",
       "video": "medias/monika.mp4",
       "thumb": "medias/FRAME1.webp",
-      "photo": "medias/FRAME2.webp"
+      "photo": "medias/FRAME2.webp",
+      "award": "medias/MONIKA_AWARD.webp"
     },
     {
       "title": "MAGIC IS BA&SH",
       "description": "Creative direction of the Ba&sh Noël 2025 campaign, where the brand’s signature red aesthetic spreads across Paris through gift machines, television screens and urban installations.",
       "credits": "",
       "date": "2025",
+      "tapFullView": false,
       "video": "medias/TELES_desktop.mp4",
       "cover": "medias/TELES_DESKTOP.webp",
       "thumb": "medias/PIECES.webp",
@@ -68,6 +73,20 @@
       "video": "medias/LFDSS.mp4",
       "thumb": "medias/LFDSS_THUMB.webp",
       "photo": "medias/image.webp"
+    },
+    {
+      "title": "SIGNATURE AESTHETIC",
+      "description": "",
+      "credits": "",
+      "date": "2026",
+      "tapFullView": false,
+      "video": "medias/diapo_splitscreen.mp4",
+      "videoMobile": "medias/doublehalo.mp4",
+      "fullVideo": "medias/doublehalo.mp4",
+      "portrait": true,
+      "thumb": "medias/SIGNATURE_AESTHETIC.webp",
+      "coverMobile": "medias/SIGNATURE_AESTHETIC_MOBILE.webp",
+      "photo": "medias/SIGNATURE_PHOTO.webp"
     }
   ],
   "case": [

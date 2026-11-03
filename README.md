@@ -61,7 +61,7 @@ velar/
 - **Intro** : roulette sur toutes les covers pendant 1,5 s, puis le scroll est libéré.
 - **Accueil** : une slide plein écran par projet. Le scroll vertical (molette ou toucher) est lissé et s'aimante sur la slide la plus proche. Après un court arrêt sur une slide, sa vidéo démarre en muet par-dessus la cover.
 - **Desktop (≥ 768px)** : un clic sur une slide ouvre la **page projet**, une piste horizontale avec un panneau par projet et un bandeau d'infos (titre, description, crédits, date) en bas. INFO ouvre le About.
-- **Mobile (< 768px)** : un tap sur la slide bascule la vidéo en vue entière (non recadrée), un second tap remet la cover. Un swipe vers la gauche ouvre l'onglet CASE. Il n'y a pas de page projet sur mobile. Le logo en bas ouvre le About.
+- **Mobile (< 768px)** : un tap sur la slide bascule la vidéo en vue entière (non recadrée), un second tap remet la cover, sauf pour les projets marqués `tapFullView: false`. Un swipe vers la gauche ouvre l'onglet CASE. Il n'y a pas de page projet sur mobile. Le logo en bas ouvre le About.
 - **INDEX / CASE** : overlay avec les vignettes des projets (INDEX) et les images libres (CASE). Le bouton de la nav desktop est actuellement masqué dans `index.html` (`#nav-index-case`).
 - Passer d'un côté à l'autre du seuil de 768px recharge la page.
 
@@ -89,9 +89,13 @@ L'ordre du tableau `projects` est l'ordre d'affichage (accueil et page projet).
 | `video`       | oui* | Vidéo de la slide d'accueil (teaser court) et, par défaut, de la page projet |
 | `thumb`       | oui | Vignette INDEX et poster par défaut de la slide |
 | `cover`       | non | Poster de la slide d'accueil et de la page projet, s'il doit différer de `thumb` |
+| `videoMobile` + `coverMobile` | non | Vidéo et poster de la slide d’accueil sur mobile (< 768px), par exemple une version verticale du teaser |
+| `tapFullView` | non | `false` pour désactiver le tap mobile qui passe la vidéo en vue entière (utile quand la vidéo mobile est déjà verticale) |
 | `photo`       | non | Photo affichée à côté de la vidéo sur la page projet |
 | `fullVideo`   | non | Version longue lue sur la page projet à la place de `video` |
 | `portrait`    | non | `true` si la vidéo de la page projet est verticale : cellule vidéo au ratio 2:3 (léger zoom), la photo prend le reste |
+| `sideVideo` + `sidePoster` | non | Seconde vidéo jouée dans la cellule photo de la page projet, à la place de `photo`, avec son poster |
+| `award`       | non | Laurier de prix (webp transparent) affiché en bas à droite de la slide d’accueil et en haut à droite de la page projet |
 | `videos` + `posters` | non | Panneau à plusieurs vidéos qui tournent une à une (ex. Ba&sh), avec un poster par vidéo |
 | `images`      | non | Panneau à plusieurs images en colonnes, sans vidéo (ex. festival) |
 | `image` + `imageMobile` | non | Slide d'accueil en image fixe au lieu d'une vidéo (\* remplace `video`) |

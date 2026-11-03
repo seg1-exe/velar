@@ -159,6 +159,20 @@
     text-align: center;
 }
 
+/* ── Award laurel (p.award) on the home slide: bottom right. The mobile block
+      moves it up, above the fixed logo. ── */
+.slide-award {
+    position: absolute;
+    right: 36px;
+    bottom: 36px;
+    width: clamp(150px, 13vw, 230px);
+    height: auto;
+    z-index: 11;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.45));
+}
+
 /* ── Tap-to-reveal project info — mobile only, see the mobile block ── */
 .slide-info {
     display: none;
@@ -692,6 +706,19 @@
         height: 100%;
     }
 
+    /* ── Award laurel (p.award) over the panel media, top right ── */
+    .project-award {
+        position: absolute;
+        top: 24px;
+        right: 30px;
+        width: clamp(150px, 13vw, 230px);
+        height: auto;
+        z-index: 5;
+        pointer-events: none;
+        user-select: none;
+        filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.45));
+    }
+
     .project-cell video,
     .project-cell img {
         width: 100%;
@@ -1138,6 +1165,13 @@
 @media (max-width: 767px) {
     .slide-content {
         padding: 24px;
+    }
+
+    /* ── Award laurel on the slide: above the fixed logo ── */
+    .slide-award {
+        right: 16px;
+        bottom: 140px;
+        width: 150px;
     }
 
     /* ── Tap-to-reveal project info: description + credits as highlighted

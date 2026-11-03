@@ -65,7 +65,22 @@ let snapTween     = null;
 let snapTimeout   = null;
 let scrollEnabled = false;
 
-const SNAP_THRESHOLD = 0.28;
+// Wheel gain and snap threshold for the home. A slide is a full viewport
+// tall; the gain keeps a project change to about one flick, and the threshold
+// is the share of a slide to travel before the snap commits to the neighbour,
+// the same in both directions.
+const V_WHEEL_GAIN     = 1.4;
+const V_SNAP_THRESHOLD = 0.18;
+
+// Which slide/panel to settle on, from the one we came from and how far we
+// have travelled since (in slides, signed). Symmetric: moving past the
+// threshold in either direction commits to the neighbour; a long flick skips
+// several. Shared by the home (vertical) and the project page (horizontal).
+function pickSnapIndex(fromIndex, travel, count, threshold) {
+    const bias = 1 - threshold;
+    const step = travel > 0 ? Math.floor(travel + bias) : Math.ceil(travel - bias);
+    return ((fromIndex + step) % count + count) % count;
+}
 
 function getSlideH() { return window.innerHeight; }
 function getTotal()  { return slides.length * getSlideH(); }
@@ -128,13 +143,18 @@ function scheduleMagneticSnap() {
 
 function doMagneticSnap() {
     if (isSnapping) return;
-    const h    = getSlideH();
-    const N    = slides.length;
-    const norm = ((smoothScrollY / h) % N + N) % N;
-    const base = Math.floor(norm);
-    const frac = norm - base;
-    const idx  = frac >= SNAP_THRESHOLD ? (base + 1) % N : base;
-    snapToSlide(idx);
+    const travel = (smoothScrollY - getSnapDest(currentIndex)) / getSlideH();
+    snapToSlide(pickSnapIndex(currentIndex, travel, slides.length, V_SNAP_THRESHOLD));
+}
+
+// A new wheel gesture while the snap is still settling takes over instead of
+// being dropped, so consecutive flicks chain from slide to slide.
+function interruptSnap() {
+    if (!snapTween) return;
+    snapTween.kill();
+    snapTween  = null;
+    isSnapping = false;
+    targetScrollY = smoothScrollY;
 }
 
 function snapToSlide(index) {
@@ -183,9 +203,9 @@ gsap.ticker.add(() => {
 function onWheel(e) {
     if (!scrollEnabled || isProjectPageOpen || isGalleryOpen || isAboutAnimating) return;
     e.preventDefault();
-    if (isSnapping) return;
+    interruptSnap();
     stopSlideVideos();
-    targetScrollY += e.deltaY;
+    targetScrollY += e.deltaY * V_WHEEL_GAIN;
     scheduleMagneticSnap();
 }
 
@@ -245,8 +265,16 @@ function onTouchEnd(e) {
 let targetScrollX        = 0;
 let smoothScrollX        = 0;
 let isSnappingH          = false;
+let snapTweenH           = null;
 let snapTimeoutH         = null;
 let projectScrollEnabled = false;
+
+// A panel is a full viewport wide, so raw wheel deltas would need a whole
+// screen of scrolling per project; the gain brings that down to roughly one
+// flick. The threshold is the share of a panel to travel before the snap
+// commits to the next one — the same in both directions.
+const H_WHEEL_GAIN     = 1.6;
+const H_SNAP_THRESHOLD = 0.18;
 
 function getPanelW()     { return window.innerWidth; }
 function getPanelTotal() { return projectData.length * getPanelW(); }
@@ -276,15 +304,16 @@ function scheduleMagneticSnapH() {
     snapTimeoutH = setTimeout(doMagneticSnapH, 160);
 }
 
+// Project-page flavour of pickSnapIndex (see the home scroll section).
+function snapTargetIndexH(fromIndex, travel) {
+    return pickSnapIndex(fromIndex, travel, projectData.length, H_SNAP_THRESHOLD);
+}
+
 function doMagneticSnapH() {
     if (isSnappingH) return;
-    const w    = getPanelW();
-    const N    = projectData.length;
-    const norm = ((smoothScrollX / w) % N + N) % N;
-    const base = Math.floor(norm);
-    const frac = norm - base;
-    const idx  = frac >= SNAP_THRESHOLD ? (base + 1) % N : base;
-    snapToProjectSlide(idx);
+    const w      = getPanelW();
+    const travel = (smoothScrollX - getSnapDestH(projectCurrentIndex)) / w;
+    snapToProjectSlide(snapTargetIndexH(projectCurrentIndex, travel));
 }
 
 function snapToProjectSlide(index) {
@@ -296,7 +325,7 @@ function snapToProjectSlide(index) {
     const dest  = getSnapDestH(index);
     const proxy = { val: smoothScrollX };
 
-    gsap.to(proxy, {
+    snapTweenH = gsap.to(proxy, {
         val:      dest,
         duration: 0.9,
         ease:     "power3.out",
@@ -306,6 +335,7 @@ function snapToProjectSlide(index) {
             applyHScroll(smoothScrollX);
         },
         onComplete: () => {
+            snapTweenH          = null;
             smoothScrollX       = dest;
             targetScrollX       = dest;
             projectCurrentIndex = index;
@@ -314,6 +344,16 @@ function snapToProjectSlide(index) {
             isSnappingH = false;
         }
     });
+}
+
+// A new gesture while the snap is still settling takes over instead of being
+// dropped, so consecutive flicks chain from project to project.
+function interruptSnapH() {
+    if (!snapTweenH) return;
+    snapTweenH.kill();
+    snapTweenH  = null;
+    isSnappingH = false;
+    targetScrollX = smoothScrollX;
 }
 
 gsap.ticker.add(() => {
@@ -327,9 +367,9 @@ gsap.ticker.add(() => {
 function onProjectWheel(e) {
     if (!projectScrollEnabled) return;
     e.preventDefault();
-    if (isSnappingH) return;
+    interruptSnapH();
     const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    targetScrollX += delta;
+    targetScrollX += delta * H_WHEEL_GAIN;
     scheduleMagneticSnapH();
 }
 
@@ -347,7 +387,7 @@ function onProjectTouchEnd(e) {
     const dx = _projTouchStartX - e.changedTouches[0].clientX;
     const dy = _projTouchStartY - e.changedTouches[0].clientY;
     if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
-    if (isSnappingH) return;
+    interruptSnapH();
     const delta = Math.abs(dx) >= Math.abs(dy) ? dx : dy;
     targetScrollX += delta * 1.8;
     scheduleMagneticSnapH();
@@ -369,7 +409,11 @@ function buildSlides(projects) {
         // Optional per-slide cover: falls back to the thumb, which is also the
         // INDEX vignette. Set "cover" when the home video is a different cut
         // from the one the vignette represents (ba&sh).
-        const cover = p.cover || p.thumb;
+        const cover = (!isDesktop && p.coverMobile) ? p.coverMobile : (p.cover || p.thumb);
+        // Mobile may get its own cut of the home video (videoMobile), e.g. a
+        // vertical version of a landscape teaser. Crossing the breakpoint
+        // reloads the page, so choosing at build time is safe.
+        const homeVideo = (!isDesktop && p.videoMobile) ? p.videoMobile : p.video;
         // Image-only project: static image (with optional mobile variant) instead
         // of a video. The <source media> mirrors the JS mobile breakpoint (<768px).
         const mediaHTML = p.image ? `
@@ -378,7 +422,7 @@ function buildSlides(projects) {
                     <img src="${esc(p.image)}" alt="${esc(p.title)}" draggable="false" decoding="async">
                 </picture>` : `
                 <video muted loop playsinline preload="none" aria-hidden="true" poster="${esc(cover)}">
-                    <source src="${esc(p.video)}" type="video/mp4">
+                    <source src="${esc(homeVideo)}" type="video/mp4">
                 </video>
                 <img class="slide-cover" src="${esc(cover)}" alt="${esc(p.title)}" draggable="false" decoding="async">`;
         // Mobile tap-to-reveal info: description + credits as highlighted
@@ -390,12 +434,15 @@ function buildSlides(projects) {
                 <p class="slide-info__text slide-info__desc" data-text="${esc(p.description)}">${esc(p.description)}</p>` : ""}${p.credits ? `
                 <p class="slide-info__text slide-info__credits" data-text="${esc(p.credits)}">${esc(p.credits)}</p>` : ""}
             </div>` : "";
+        // Optional award laurel (p.award), bottom right of the slide.
+        const awardHTML = p.award ? `
+            <img class="slide-award" src="${esc(p.award)}" alt="Award" draggable="false" loading="lazy" decoding="async">` : "";
         section.innerHTML = `
             <div class="slide-content">
                 <h2 class="title">${esc(p.title)}</h2>
             </div>
             <div class="media-container">${mediaHTML}
-            </div>${infoHTML}`;
+            </div>${infoHTML}${awardHTML}`;
         slidesContainer.appendChild(section);
     });
 }
@@ -444,7 +491,14 @@ function buildProjectPanels(projects) {
             // uncropped and give the photo the rest of the width.
             const gridClass  = p.portrait ? "project-media-grid project-media-grid--portrait" : "project-media-grid";
             const photo = p.photo || (p.photos && p.photos[0]);
-            const photoHTML = photo ? `
+            // The side cell holds a photo — or, with sideVideo, a second video
+            // that plays along with the main one (poster: sidePoster or thumb).
+            const photoHTML = p.sideVideo ? `
+                <div class="project-cell project-cell--photo">
+                    <video class="project-video" muted loop playsinline preload="none" aria-hidden="true" poster="${esc(p.sidePoster || p.thumb)}">
+                        <source src="${esc(p.sideVideo)}" type="video/mp4">
+                    </video>
+                </div>` : photo ? `
                 <div class="project-cell project-cell--photo">
                     <img src="${esc(photo)}" alt="${esc(p.title)} — project visual" draggable="false" loading="lazy" decoding="async">
                 </div>` : "";
@@ -457,6 +511,11 @@ function buildProjectPanels(projects) {
                 </div>
                 ${photoHTML}
             </div>`;
+        }
+        // Optional award laurel, overlaid top-right of the panel media.
+        if (p.award) {
+            article.insertAdjacentHTML("beforeend", `
+            <img class="project-award" src="${esc(p.award)}" alt="Award" draggable="false" loading="lazy" decoding="async">`);
         }
         projectTrack.appendChild(article);
     });
@@ -602,6 +661,9 @@ function toggleVideo(index) {
     const slide  = slides[index];
     const videos = slide.querySelectorAll("video");
     if (!videos.length) return;
+    // Projects can opt out (tapFullView: false), e.g. when the mobile video is
+    // already vertical and fills the screen: the tap then does nothing.
+    if (projectData[index] && projectData[index].tapFullView === false) return;
     cancelSlideDwell();
     // The dwell autoplay may already be running full-bleed — the first tap
     // always switches to the contained "full view", the next one stops it.
@@ -871,16 +933,17 @@ function playProjectVideo(index) {
     const panel = document.querySelectorAll(".project-panel")[index];
     if (!panel) return;
     if (panel._rotation) { panel._rotation.play(); return; }
-    const v = panel.querySelector(".project-video");
-    if (v) { const p = v.play(); if (p) p.catch(() => {}); }
+    // Standard panels may hold two videos (main + sideVideo): play them all.
+    panel.querySelectorAll(".project-video").forEach(v => {
+        const p = v.play(); if (p) p.catch(() => {});
+    });
 }
 
 function stopProjectVideo(index) {
     const panel = document.querySelectorAll(".project-panel")[index];
     if (!panel) return;
     if (panel._rotation) { panel._rotation.stop(); return; }
-    const v = panel.querySelector(".project-video");
-    if (v) v.pause();
+    panel.querySelectorAll(".project-video").forEach(v => v.pause());
 }
 
 function stopAllProjectVideos() {
