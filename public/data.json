@@ -25,13 +25,18 @@
       "award": "medias/MONIKA_AWARD.webp"
     },
     {
-      "title": "J'ressens plus rien",
+      "title": "SIGNATURE AESTHETIC",
       "description": "",
-      "credits": "DIRECTED AND SHOT BY Czcita Moreno STARRING Louna Bontemps PRACTICAL EFFECTS BY Titouan Louvat VFX BY Valentin Dumas",
+      "credits": "",
       "date": "2026",
-      "video": "medias/realo.mp4",
-      "thumb": "medias/REALO.webp",
-      "photo": "medias/REALO_PHOTO.webp"
+      "tapFullView": false,
+      "video": "medias/diapo_splitscreen.mp4",
+      "videoMobile": "medias/doublehalo.mp4",
+      "fullVideo": "medias/doublehalo.mp4",
+      "portrait": true,
+      "thumb": "medias/SIGNATURE_AESTHETIC_FIRST.webp",
+      "coverMobile": "medias/SIGNATURE_AESTHETIC_MOBILE_FIRST.webp",
+      "photo": "medias/SIGNATURE_PHOTO.webp"
     },
     {
       "title": "MAGIC IS BA&SH",
@@ -43,6 +48,15 @@
       "thumb": "medias/BASH_FIRST.webp",
       "videos": ["medias/villeparis.mp4", "medias/pieces.mp4", "medias/teles.mp4"],
       "posters": ["medias/VILLE.webp", "medias/PIECES.webp", "medias/TELES.webp"]
+    },
+    {
+      "title": "J'ressens plus rien",
+      "description": "",
+      "credits": "DIRECTED AND SHOT BY Czcita Moreno STARRING Louna Bontemps PRACTICAL EFFECTS BY Titouan Louvat VFX BY Valentin Dumas",
+      "date": "2026",
+      "video": "medias/realo.mp4",
+      "thumb": "medias/REALO.webp",
+      "photo": "medias/REALO_PHOTO.webp"
     },
     {
       "title": "Velar Short Film Festival",
@@ -71,29 +85,6 @@
       "video": "medias/ikeptmyname.mp4",
       "thumb": "medias/I_KEPT_MY_NAME_FIRST.webp",
       "photo": "medias/I_KEPT_MY_NAME.webp"
-    },
-    {
-      "title": "LA FAUTE DES AUTRES",
-      "description": "La Faute des Autres is a hybrid short film set in a dystopian future where nature has taken control of humankind. Blurring fiction and document, it imagines a world where humans are no longer in charge.",
-      "credits": "Directed by Sara Echeverri and Carmen Moreno.",
-      "date": "2025",
-      "video": "medias/LFDSS.mp4",
-      "thumb": "medias/LFDSS_FIRST.webp",
-      "photo": "medias/image.webp"
-    },
-    {
-      "title": "SIGNATURE AESTHETIC",
-      "description": "",
-      "credits": "",
-      "date": "2026",
-      "tapFullView": false,
-      "video": "medias/diapo_splitscreen.mp4",
-      "videoMobile": "medias/doublehalo.mp4",
-      "fullVideo": "medias/doublehalo.mp4",
-      "portrait": true,
-      "thumb": "medias/SIGNATURE_AESTHETIC_FIRST.webp",
-      "coverMobile": "medias/SIGNATURE_AESTHETIC_MOBILE_FIRST.webp",
-      "photo": "medias/SIGNATURE_PHOTO.webp"
     }
   ],
   "case": [
