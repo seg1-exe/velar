@@ -10,8 +10,8 @@
       "videoMobile": "medias/bvlgari_full.mp4",
       "fullVideo": "medias/bvlgari_full.mp4",
       "portrait": true,
-      "thumb": "medias/BVLGARI.webp",
-      "coverMobile": "medias/BVLGARI_MOBILE.webp",
+      "thumb": "medias/BVLGARI_FIRST.webp",
+      "coverMobile": "medias/BVLGARI_MOBILE_FIRST.webp",
       "photo": "medias/BVLGARI_PHOTO.webp"
     },
     {
@@ -20,9 +20,18 @@
       "credits": "DIRECTED, WRITTEN AND EDITED BY Carmen Moreno, Carlos Didier, Sara Echeverri STARRING Monika JIA PRODUCED BY Velar",
       "date": "2026",
       "video": "medias/monika.mp4",
-      "thumb": "medias/FRAME1.webp",
+      "thumb": "medias/MONIKA_FIRST.webp",
       "photo": "medias/FRAME2.webp",
       "award": "medias/MONIKA_AWARD.webp"
+    },
+    {
+      "title": "J'ressens plus rien",
+      "description": "",
+      "credits": "DIRECTED AND SHOT BY Czcita Moreno STARRING Louna Bontemps PRACTICAL EFFECTS BY Titouan Louvat VFX BY Valentin Dumas",
+      "date": "2026",
+      "video": "medias/realo.mp4",
+      "thumb": "medias/REALO.webp",
+      "photo": "medias/REALO_PHOTO.webp"
     },
     {
       "title": "MAGIC IS BA&SH",
@@ -31,8 +40,7 @@
       "date": "2025",
       "tapFullView": false,
       "video": "medias/TELES_desktop.mp4",
-      "cover": "medias/TELES_DESKTOP.webp",
-      "thumb": "medias/PIECES.webp",
+      "thumb": "medias/BASH_FIRST.webp",
       "videos": ["medias/villeparis.mp4", "medias/pieces.mp4", "medias/teles.mp4"],
       "posters": ["medias/VILLE.webp", "medias/PIECES.webp", "medias/TELES.webp"]
     },
@@ -42,7 +50,7 @@
       "credits": "",
       "date": "2026 Edition",
       "video": "medias/festival.mp4",
-      "thumb": "medias/DANSE.webp",
+      "thumb": "medias/FESTIVAL_FIRST.webp",
       "images": ["medias/AFFICHE.webp", "medias/ALBERTO.webp", "medias/PAOPLE.webp"]
     },
     {
@@ -52,8 +60,7 @@
       "date": "2026",
       "video": "medias/arcane.mp4",
       "fullVideo": "medias/arcane_full.mp4",
-      "cover": "medias/ARCANE_COVER.webp",
-      "thumb": "medias/ARCANE.webp",
+      "thumb": "medias/ARCANE_FIRST.webp",
       "photo": "medias/ARCANE_PHOTO.webp"
     },
     {
@@ -62,7 +69,7 @@
       "credits": "DIRECTED, WRITTEN AND EDITED BY Carmen Moreno & Carlos Didier STARRING Marina Obba",
       "date": "2026",
       "video": "medias/ikeptmyname.mp4",
-      "thumb": "medias/I_KEPT_MY_NAME.webp",
+      "thumb": "medias/I_KEPT_MY_NAME_FIRST.webp",
       "photo": "medias/I_KEPT_MY_NAME.webp"
     },
     {
@@ -71,7 +78,7 @@
       "credits": "Directed by Sara Echeverri and Carmen Moreno.",
       "date": "2025",
       "video": "medias/LFDSS.mp4",
-      "thumb": "medias/LFDSS_THUMB.webp",
+      "thumb": "medias/LFDSS_FIRST.webp",
       "photo": "medias/image.webp"
     },
     {
@@ -84,8 +91,8 @@
       "videoMobile": "medias/doublehalo.mp4",
       "fullVideo": "medias/doublehalo.mp4",
       "portrait": true,
-      "thumb": "medias/SIGNATURE_AESTHETIC.webp",
-      "coverMobile": "medias/SIGNATURE_AESTHETIC_MOBILE.webp",
+      "thumb": "medias/SIGNATURE_AESTHETIC_FIRST.webp",
+      "coverMobile": "medias/SIGNATURE_AESTHETIC_MOBILE_FIRST.webp",
       "photo": "medias/SIGNATURE_PHOTO.webp"
     }
   ],
